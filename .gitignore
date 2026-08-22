@@ -1,0 +1,7 @@
+# Model files — never commit
+*.gguf
+
+# Dependencies and build outputs
+.deps/
+build/
+*.log
