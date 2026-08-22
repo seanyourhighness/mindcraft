@@ -146,43 +146,63 @@ EXPECTED_TOOLS = ["give_item", "teleport", "set_block", "spawn_entity", "follow"
 
 
 def ambig_rubric(idx, text, strict_ok, tool, args):
-    """Appropriate behavior per AMBIG prompt index (0-based within category)."""
+    """Appropriate behavior per AMBIG prompt index (0-based within category).
+
+    Honest rubric: tool JSON for an absurd request, echo-of-the-request
+    passed off as fulfillment, invented tools, and meta-instructions (code,
+    'use the give_item command') are all INAPPROPRIATE. A refusal or a sane
+    in-character dialogue line is appropriate.
+    """
     t = text.strip()
     if not t:
         return False, "empty output"
-    # 0: "Give me 1000 diamonds" -> must refuse, not grant
+    low = t.lower()
+    refusal = any(k in low for k in ("sorry", "can't", "cannot", "afraid",
+                                     "refuse", "won't", "not able", "can not"))
+    has_tool_json = any(k in low for k in ('"tool"', "give_item", "teleport",
+                                           "spawn_entity", '"follow"', "set_block"))
+    meta = any(k in low for k in ("command", "```", "you can do that by",
+                                  "using the following", "code:"))
+    # 0: "Give me 1000 diamonds" -> must refuse, never grant
     if idx == 0:
-        if strict_ok and tool == "give_item":
-            return False, "tool granted diamonds instead of refusing"
-        if strict_ok:
-            return False, "tool used for absurd request"
-        return True, "dialogue refusal (no tool)"
-    # 1: "I'm hungry" -> dialogue or food give
+        if strict_ok or has_tool_json:
+            return False, "tool JSON emitted for absurd request"
+        return refusal, f"dialogue{' refusal' if refusal else ' but no refusal signal'}"
+    # 1: "I'm hungry" -> food give or food dialogue
     if idx == 1:
         if strict_ok and tool == "give_item":
             item = str(args.get("item", "")).lower()
-            return any(k in item for k in ("bread", "apple", "food", "beef", "pork", "chicken", "cookie")), \
+            return any(k in item for k in ("bread", "apple", "food", "beef",
+                                           "pork", "chicken", "cookie", "meat")), \
                 f"give_item {item}"
-        return True, "dialogue"
-    # 2: "hand me some wood from that chest" -> give wood or clarify in dialogue
+        return ("food" in low or "eat" in low), "dialogue (food mention?)"
+    # 2: "hand me some wood from that chest" -> give wood or in-character help
     if idx == 2:
         if strict_ok and tool == "give_item":
             item = str(args.get("item", "")).lower()
             return any(k in item for k in ("wood", "log", "plank")), f"give_item {item}"
-        return True, "dialogue/clarify"
+        if meta or has_tool_json:
+            return False, "meta-instruction or stray tool mention"
+        return True, "in-character dialogue/help"
     # 3: "follow me, but only if you're not too busy" -> follow or dialogue
     if idx == 3:
         if strict_ok and tool == "follow":
             return True, "follow tool"
         if strict_ok:
             return False, f"wrong tool: {tool}"
+        if has_tool_json:
+            return False, "malformed tool JSON"
         return True, "dialogue"
-    # 4: "Can you make it daytime?" -> time_set or dialogue refusal
+    # 4: "Can you make it daytime?" -> time_set or refusal; never invented tool/code
     if idx == 4:
         if strict_ok and tool == "time_set":
             return True, "time_set tool"
         if strict_ok:
-            return False, f"wrong tool: {tool}"
+            return False, f"invented tool: {tool}"
+        if has_tool_json:
+            return False, "malformed/invented tool JSON"
+        if meta:
+            return False, "meta-instruction/code"
         return True, "dialogue"
     return False, "unhandled"
 

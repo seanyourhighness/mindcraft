@@ -5,22 +5,27 @@
 # counts are numbers. This mirrors the schema in the tool-call system prompt
 # (docs/eval/run_eval.py, TOOL_SYSTEM).
 #
-# NOTE: an earlier unconstrained variant (args = any JSON object) caused tiny
+# NOTE 1: an earlier unconstrained variant (args = any JSON object) caused tiny
 # models to degenerate into letter-by-letter key spam under the grammar; see
-# docs/model-selection.md. Constraining keys per tool fixes it and is what
-# production should ship.
+# docs/model-selection.md. Constraining keys per tool fixes it.
+# NOTE 2: this llama.cpp build's grammar parser does NOT accept underscore in
+# rule names (is_word_char = [a-zA-Z0-9-]); rule names are therefore camelCase.
+# Quoted literals may still contain underscores.
 
-root ::= give_item | teleport | set_block | spawn_entity | follow | stop_following | time_set
+root ::= giveItem | teleport | setBlock | spawnEntity | follow | stopFollowing | timeSet
 
-give_item      ::= "{" ws "\"tool\"" ws ":" ws "\"give_item\"" ws "," ws "\"args\"" ws ":" ws "{" ws "\"item\"" ws ":" ws string ws "," ws "\"count\"" ws ":" ws number ws "}" ws "}"
-teleport       ::= "{" ws "\"tool\"" ws ":" ws "\"teleport\"" ws "," ws "\"args\"" ws ":" ws "{" ws "\"target\"" ws ":" ws string ws "}" ws "}"
-set_block      ::= "{" ws "\"tool\"" ws ":" ws "\"set_block\"" ws "," ws "\"args\"" ws ":" ws "{" ws "\"block\"" ws ":" ws string ws "}" ws "}"
-spawn_entity   ::= "{" ws "\"tool\"" ws ":" ws "\"spawn_entity\"" ws "," ws "\"args\"" ws ":" ws "{" ws "\"entity\"" ws ":" ws string ws "}" ws "}"
-follow         ::= "{" ws "\"tool\"" ws ":" ws "\"follow\"" ws "," ws "\"args\"" ws ":" ws "{" ws "\"target\"" ws ":" ws string ws "}" ws "}"
-stop_following ::= "{" ws "\"tool\"" ws ":" ws "\"stop_following\"" ws "," ws "\"args\"" ws ":" ws "{" ws "}" ws "}"
-time_set       ::= "{" ws "\"tool\"" ws ":" ws "\"time_set\"" ws "," ws "\"args\"" ws ":" ws "{" ws "\"time\"" ws ":" ws string ws "}" ws "}"
+giveItem      ::= "{" ws "\"tool\"" ws ":" ws "\"give_item\"" ws "," ws "\"args\"" ws ":" ws "{" ws "\"item\"" ws ":" ws string ws "," ws "\"count\"" ws ":" ws number ws "}" ws "}"
+teleport      ::= "{" ws "\"tool\"" ws ":" ws "\"teleport\"" ws "," ws "\"args\"" ws ":" ws "{" ws "\"target\"" ws ":" ws string ws "}" ws "}"
+setBlock      ::= "{" ws "\"tool\"" ws ":" ws "\"set_block\"" ws "," ws "\"args\"" ws ":" ws "{" ws "\"block\"" ws ":" ws string ws "}" ws "}"
+spawnEntity   ::= "{" ws "\"tool\"" ws ":" ws "\"spawn_entity\"" ws "," ws "\"args\"" ws ":" ws "{" ws "\"entity\"" ws ":" ws string ws "}" ws "}"
+follow        ::= "{" ws "\"tool\"" ws ":" ws "\"follow\"" ws "," ws "\"args\"" ws ":" ws "{" ws "\"target\"" ws ":" ws string ws "}" ws "}"
+stopFollowing ::= "{" ws "\"tool\"" ws ":" ws "\"stop_following\"" ws "," ws "\"args\"" ws ":" ws "{" ws "}" ws "}"
+timeSet       ::= "{" ws "\"tool\"" ws ":" ws "\"time_set\"" ws "," ws "\"args\"" ws ":" ws "{" ws "\"time\"" ws ":" ws string ws "}" ws "}"
 
-string ::= "\"" chars "\""
-chars  ::= [^"\\] | "\\" ["\\/bfnrt] | "\\u" [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]
-number ::= "-"? [0-9]+ ("." [0-9]+)?
+string ::= "\"" (
+    [^"\\] |
+    "\\" (["\\/bfnrt] | "u" [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F])
+  )* "\""
+number ::= "-"? INT ("." [0-9]*)?
+INT    ::= "0" | [1-9] [0-9]*
 ws     ::= [ \t\n]*
