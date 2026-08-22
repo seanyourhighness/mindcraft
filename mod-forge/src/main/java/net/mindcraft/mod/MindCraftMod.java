@@ -69,7 +69,7 @@ public class MindCraftMod {
                 .modelPath(model)
                 .port(0) // auto-pick free port, loopback only
                 .threads(Runtime.getRuntime().availableProcessors() >= 8 ? 4 : 2)
-                .contextSize(2048)
+                .contextSize(8192)
                 // thinking-style model: default template emits empty output
                 .extraArgs(List.of("--jinja"))
                 .build());

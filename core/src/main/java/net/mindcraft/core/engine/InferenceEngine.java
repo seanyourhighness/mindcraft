@@ -174,9 +174,20 @@ public final class InferenceEngine implements InferenceBackend {
     private String buildBody(String prompt, GenOptions opts) {
         Map<String, Object> body = new LinkedHashMap<>();
         List<Map<String, String>> messages = new ArrayList<>();
+        // Split the assembled prompt: leading system block (persona/ledger) goes
+        // in a system message so the chat template renders it with priority.
+        String content = prompt;
+        int split = prompt.indexOf("\n\n");
+        if (split > 0 && prompt.startsWith("You are ")) {
+            content = prompt.substring(split + 2);
+            Map<String, String> sys = new LinkedHashMap<>();
+            sys.put("role", "system");
+            sys.put("content", prompt.substring(0, split));
+            messages.add(sys);
+        }
         Map<String, String> user = new LinkedHashMap<>();
         user.put("role", "user");
-        user.put("content", prompt);
+        user.put("content", content);
         messages.add(user);
         body.put("messages", messages);
         body.put("max_tokens", opts.maxTokens());

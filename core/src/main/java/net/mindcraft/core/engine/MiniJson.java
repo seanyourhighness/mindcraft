@@ -12,13 +12,13 @@ import java.util.Map;
  * numbers parse as Long or Double. Used to decode llama-server HTTP responses
  * without adding a runtime dependency.
  */
-final class MiniJson {
+public final class MiniJson {
 
     private MiniJson() {
     }
 
     /** Parse the whole text as one JSON value. */
-    static Object parse(String text) {
+    public static Object parse(String text) {
         Parser p = new Parser(text);
         Object value = p.parseValue();
         p.skipWs();
@@ -32,7 +32,7 @@ final class MiniJson {
      * Navigate a dotted/bracketed path such as {@code "choices[0].message.content"}.
      * Returns {@code null} when any segment is absent.
      */
-    static Object at(Object tree, String path) {
+    public static Object at(Object tree, String path) {
         Object cur = tree;
         int n = path.length();
         int start = 0;
@@ -80,14 +80,14 @@ final class MiniJson {
     }
 
     /** Navigate a path and return the value as a String, or {@code null} if absent/not a string. */
-    static String stringAt(Object tree, String path) {
+    public static String stringAt(Object tree, String path) {
         Object v = at(tree, path);
         return v instanceof String s ? s : null;
     }
 
     /** Minimal JSON serializer for request bodies (maps, lists, strings,
      *  numbers, booleans, null). Strings are escaped per RFC 8259. */
-    static String stringify(Object v) {
+    public static String stringify(Object v) {
         StringBuilder sb = new StringBuilder();
         writeValue(sb, v);
         return sb.toString();

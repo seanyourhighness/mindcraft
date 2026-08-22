@@ -50,7 +50,7 @@ public record EngineConfig(
         private String host = "127.0.0.1";
         private int port;
         private int threads = 4;
-        private int contextSize = 2048;
+        private int contextSize = 8192;
         private Path serverBinary;
         private List<String> extraArgs = List.of();
 

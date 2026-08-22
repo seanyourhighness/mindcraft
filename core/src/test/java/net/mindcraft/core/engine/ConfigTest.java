@@ -26,7 +26,7 @@ class ConfigTest {
         assertEquals("127.0.0.1", c.host());
         assertEquals(0, c.port(), "port 0 = auto-pick a free port");
         assertEquals(4, c.threads());
-        assertEquals(2048, c.contextSize());
+        assertEquals(8192, c.contextSize());
         assertEquals("/tmp/llama-server", c.serverBinary().toString());
         assertTrue(c.extraArgs().isEmpty(), "no extra args by default");
     }
