@@ -62,7 +62,7 @@ class InferenceEngineTest {
             assertTrue(engine.isRunning(), "engine must be running after start()");
             assertTrue(engine.port() > 0, "a real port must have been resolved");
 
-            GenOptions opts = new GenOptions(30, 0.2, 42L);
+            GenOptions opts = new GenOptions(30, 0.2, 42L, null);
             String out1 = engine.generate("Say hello in one short sentence.", opts);
             long tGen = System.nanoTime();
 

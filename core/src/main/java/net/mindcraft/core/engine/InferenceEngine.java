@@ -14,7 +14,9 @@ import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -169,17 +171,22 @@ public final class InferenceEngine implements InferenceBackend {
         }
     }
 
-    private static String buildBody(String prompt, GenOptions opts) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{\"messages\":[{\"role\":\"user\",\"content\":")
-                .append(jsonString(prompt))
-                .append("}],\"max_tokens\":").append(opts.maxTokens())
-                .append(",\"temperature\":").append(Double.toString(opts.temperature()));
+    private String buildBody(String prompt, GenOptions opts) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        List<Map<String, String>> messages = new ArrayList<>();
+        Map<String, String> user = new LinkedHashMap<>();
+        user.put("role", "user");
+        user.put("content", prompt);
+        messages.add(user);
+        body.put("messages", messages);
+        body.put("max_tokens", opts.maxTokens());
+        body.put("temperature", opts.temperature());
         if (opts.seed() != null) {
-            sb.append(",\"seed\":").append(opts.seed());
+            body.put("seed", opts.seed());
         }
-        sb.append(",\"stream\":false}");
-        return sb.toString();
+        body.putAll(opts.extraBody());
+        body.put("stream", false);
+        return MiniJson.stringify(body);
     }
 
     private static String jsonString(String s) {

@@ -85,6 +85,72 @@ final class MiniJson {
         return v instanceof String s ? s : null;
     }
 
+    /** Minimal JSON serializer for request bodies (maps, lists, strings,
+     *  numbers, booleans, null). Strings are escaped per RFC 8259. */
+    static String stringify(Object v) {
+        StringBuilder sb = new StringBuilder();
+        writeValue(sb, v);
+        return sb.toString();
+    }
+
+    private static void writeValue(StringBuilder sb, Object v) {
+        if (v == null) {
+            sb.append("null");
+        } else if (v instanceof String s) {
+            writeString(sb, s);
+        } else if (v instanceof Boolean || v instanceof Long || v instanceof Integer) {
+            sb.append(v);
+        } else if (v instanceof Double d) {
+            sb.append(Double.toString(d));
+        } else if (v instanceof Map<?, ?> m) {
+            sb.append('{');
+            boolean first = true;
+            for (Map.Entry<?, ?> e : m.entrySet()) {
+                if (!first) {
+                    sb.append(',');
+                }
+                first = false;
+                writeString(sb, String.valueOf(e.getKey()));
+                sb.append(':');
+                writeValue(sb, e.getValue());
+            }
+            sb.append('}');
+        } else if (v instanceof List<?> l) {
+            sb.append('[');
+            for (int i = 0; i < l.size(); i++) {
+                if (i > 0) {
+                    sb.append(',');
+                }
+                writeValue(sb, l.get(i));
+            }
+            sb.append(']');
+        } else {
+            throw new IllegalArgumentException("unsupported JSON type: " + v.getClass());
+        }
+    }
+
+    private static void writeString(StringBuilder sb, String s) {
+        sb.append('"');
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '"' -> sb.append("\\\"");
+                case '\\' -> sb.append("\\\\");
+                case '\n' -> sb.append("\\n");
+                case '\r' -> sb.append("\\r");
+                case '\t' -> sb.append("\\t");
+                default -> {
+                    if (c < 0x20) {
+                        sb.append(String.format("\\u%04x", (int) c));
+                    } else {
+                        sb.append(c);
+                    }
+                }
+            }
+        }
+        sb.append('"');
+    }
+
     private static final class Parser {
         private final String s;
         private int i;

@@ -95,7 +95,7 @@ class ConfigTest {
 
     @Test
     void genOptionsExplicit() {
-        GenOptions o = new GenOptions(30, 0.2, 42L);
+        GenOptions o = new GenOptions(30, 0.2, 42L, null);
         assertEquals(30, o.maxTokens());
         assertEquals(0.2, o.temperature());
         assertEquals(42L, o.seed());
@@ -103,7 +103,7 @@ class ConfigTest {
 
     @Test
     void genOptionsRejectsInvalidMaxTokens() {
-        assertThrows(IllegalArgumentException.class, () -> new GenOptions(0, 0.7, null));
-        assertThrows(IllegalArgumentException.class, () -> new GenOptions(-5, 0.7, null));
+        assertThrows(IllegalArgumentException.class, () -> new GenOptions(0, 0.7, null, null));
+        assertThrows(IllegalArgumentException.class, () -> new GenOptions(-5, 0.7, null, null));
     }
 }

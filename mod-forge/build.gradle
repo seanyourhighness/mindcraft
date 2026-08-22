@@ -1,0 +1,57 @@
+plugins {
+    id "net.minecraftforge.gradle" version "[6.0,6.2)"
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name + "-forge"
+}
+
+java {
+    // Compile with the local JDK 21 toolchain but emit Java 17 bytecode:
+    // Forge 1.20.1 requires Java 17 at runtime.
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+}
+
+minecraft {
+    mappings channel: "official", version: project.forge_minecraft_version
+    runs {
+        client {
+            workingDirectory project.file("run")
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${project.forge_minecraft_version}-${project.forge_version}"
+
+    // MindCraft core library (plain Java, no Minecraft deps), bundled into the jar.
+    // Plain `implementation`: the core jar is embedded manually in the `jar`
+    // task below (JarJar's strict-version handling rejects project deps here).
+    implementation project(":core")
+}
+
+jar {
+    // Bundle core classes directly into the mod jar (simplest reliable shading)
+    from(project(":core").sourceSets.main.output)
+    manifest {
+        attributes([
+            "Specification-Title": "mindcraft",
+            "Specification-Version": "1",
+            "Implementation-Title": project.name,
+            "Implementation-Version": project.jar.archiveVersion.map { it.toString() }.getOrElse(""),
+        ])
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}

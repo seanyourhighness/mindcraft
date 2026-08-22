@@ -4,6 +4,10 @@ pluginManagement {
             name = "Fabric"
             url = "https://maven.fabricmc.net/"
         }
+        maven {
+            name = "Forge"
+            url = "https://maven.minecraftforge.net/"
+        }
         mavenCentral()
         gradlePluginPortal()
     }
@@ -11,4 +15,4 @@ pluginManagement {
 
 rootProject.name = "mindcraft"
 
-include("core", "mod-fabric")
+include("core", "mod-fabric", "mod-forge")

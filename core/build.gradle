@@ -2,10 +2,18 @@ plugins {
     id "java-library"
 }
 
+version = "0.1.0"
+
 java {
+    // Java 17 baseline: Forge 1.20.1 requires Java 17 at runtime.
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
 }
 
 repositories {

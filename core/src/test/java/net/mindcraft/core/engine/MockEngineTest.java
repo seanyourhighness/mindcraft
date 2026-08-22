@@ -45,7 +45,7 @@ class MockEngineTest {
     @Test
     void generateDelegatesThroughInterface() throws Exception {
         InferenceBackend backend = new StubBackend();
-        GenOptions opts = new GenOptions(50, 0.5, 7L);
+        GenOptions opts = new GenOptions(50, 0.5, 7L, null);
 
         String result = backend.generate("hello there", opts);
 

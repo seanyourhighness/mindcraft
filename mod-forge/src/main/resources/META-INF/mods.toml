@@ -1,0 +1,24 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+license = "MIT"
+
+[[mods]]
+modId = "mindcraft"
+version = "${version}"
+displayName = "MindCraft"
+description = "CPU-only LLM inference (llama.cpp) for NPC dialogue and grammar-constrained tool calls. Runs fully local."
+authors = "Sean"
+
+[[dependencies.mindcraft]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.mindcraft]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,1.21)"
+ordering = "NONE"
+side = "BOTH"
