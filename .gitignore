@@ -5,3 +5,10 @@
 .deps/
 build/
 *.log
+
+# Gradle
+.gradle/
+
+# Loom dev run directory
+run/
+

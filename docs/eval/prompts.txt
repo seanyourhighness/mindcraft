@@ -1,0 +1,46 @@
+# MindCraft Task 2 eval set: 30 in-game player prompts
+#
+# Format: CATEGORY|prompt text
+#   DIALOGUE - plain chat, free-form generation only
+#   TOOL     - clear action request, measured free-form AND grammar-constrained
+#   AMBIG    - mixed dialogue/action or refusal-worthy, free-form only
+#
+# System prompts used by the runner (docs/eval/run_eval.py):
+#   dialogue: NPC villager persona, 1-3 short sentences
+#   tool:     same persona + tool-call JSON protocol (only-JSON when action requested)
+#
+# 15 DIALOGUE (greetings, lore, reactions to biome/time/weather)
+DIALOGUE|Hello there, who are you?
+DIALOGUE|What do you know about this village?
+DIALOGUE|Tell me a story about the old mine outside town.
+DIALOGUE|It's raining today. Do you like the rain?
+DIALOGUE|What's the best way to find diamonds?
+DIALOGUE|Have you seen any creepers around here lately?
+DIALOGUE|Why is the Nether so dangerous?
+DIALOGUE|What should I build with all this oak wood?
+DIALOGUE|It's getting dark out. Should I head home?
+DIALOGUE|What's your favorite food?
+DIALOGUE|Do you know any good enchantments?
+DIALOGUE|How long have you lived in this village?
+DIALOGUE|What do you think of the mountains to the north?
+DIALOGUE|Can you tell me about the Ender Dragon?
+DIALOGUE|Thanks for your help today.
+
+# 10 TOOL (natural phrasing of clear in-game actions)
+TOOL|Give me 5 torches.
+TOOL|Teleport me to spawn.
+TOOL|Set this block to stone.
+TOOL|Spawn a sheep.
+TOOL|Follow me.
+TOOL|Stop following.
+TOOL|Can I have a diamond sword?
+TOOL|Give me 64 cobblestone, please.
+TOOL|Teleport me to my bed.
+TOOL|Spawn a wolf to help me fight.
+
+# 5 AMBIG (mixed dialogue + implied action, or refusal-worthy)
+AMBIG|Give me 1000 diamonds.
+AMBIG|I'm hungry.
+AMBIG|Could you hand me some wood from that chest over there?
+AMBIG|Follow me, but only if you're not too busy.
+AMBIG|Can you make it daytime?

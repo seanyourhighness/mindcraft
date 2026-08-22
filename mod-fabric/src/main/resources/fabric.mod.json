@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "mindcraft",
+  "version": "${version}",
+  "name": "MindCraft",
+  "description": "CPU-only LLM inference (llama.cpp) for NPC dialogue and grammar-constrained tool calls.",
+  "authors": [
+    "Sean"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.mindcraft.mod.MindCraftMod"
+    ],
+    "client": [
+      "net.mindcraft.mod.MindCraftClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.14",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

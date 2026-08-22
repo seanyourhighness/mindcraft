@@ -1,0 +1,579 @@
+{
+  "name": "qwen2.5-0.5b",
+  "model": "/home/sean/mindcraft/spikes/jni-inference/models/qwen2.5-0.5b-instruct-q4_k_m.gguf",
+  "load_time_s": 1.033,
+  "tok_per_s_dialogue": [
+    85.27,
+    71.12,
+    68.94,
+    82.34,
+    81.53,
+    70.35,
+    66.46,
+    75.61,
+    73.8,
+    72.52,
+    69.06,
+    77.71,
+    73.7,
+    72.79,
+    75.55,
+    87.04,
+    90.37,
+    88.58,
+    92.36,
+    92.32,
+    89.54,
+    97.72,
+    91.36,
+    93.63,
+    90.26,
+    67.17,
+    61.91,
+    61.44,
+    67.57,
+    63.18
+  ],
+  "tok_per_s_speed": 68.86,
+  "peak_rss_kb": 655960,
+  "gens": [
+    {
+      "prompt": "Hello there, who are you?",
+      "mode": "free",
+      "output": "I am Elias, a friendly librarian villager in Minecraft. I help you with your Minecraft questions and provide information about the village, mining, crafting, biomes, and Minecraft mobs.",
+      "prompt_n": 65,
+      "predicted_n": 38,
+      "predicted_ms": 445.642,
+      "tok_per_s": 85.27,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "What do you know about this village?",
+      "mode": "free",
+      "output": "I know about this village as a friendly librarian who lives in the area. It's a place where people gather to read books, learn from knowledgeable locals, and engage in community activities. The village's biomes are diverse, ranging from dense forests to open meadows, each offering its own unique ecosystem. The mining is active in the nearby mines, and crafting is common, with local artisans creating goods from recycled materials. The biomes include forests, meadows, and lakes, each with their own natural attractions and challenges.",
+      "prompt_n": 66,
+      "predicted_n": 106,
+      "predicted_ms": 1490.39,
+      "tok_per_s": 71.12,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Tell me a story about the old mine outside town.",
+      "mode": "free",
+      "output": "In the ancient village, the old mine stood as a testament to the village's long history and the mining of its resources. The miners, with their sturdy harnesses and thick boots, worked tirelessly, their hands steady on the heavy, dull tools. The mine was a haven for those who sought the rare treasures of the biomes, a place where the miners found solace and the knowledge to survive. The biomes, with their lush greenery and vibrant colors, were a source of inspiration and joy for the miners, a place where they found their purpose and their strength. The village was a",
+      "prompt_n": 69,
+      "predicted_n": 120,
+      "predicted_ms": 1740.59,
+      "tok_per_s": 68.94,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "It's raining today. Do you like the rain?",
+      "mode": "free",
+      "output": "Rain is a delightful part of the natural world. It's often considered a refreshing and welcome change in the otherwise rainy season. It's a good thing for outdoor activities.",
+      "prompt_n": 69,
+      "predicted_n": 35,
+      "predicted_ms": 425.092,
+      "tok_per_s": 82.34,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "What's the best way to find diamonds?",
+      "mode": "free",
+      "output": "Finding diamonds involves digging deep into the ground. You can use mining tools to unearth them, but careful excavation is essential to avoid damaging the soil and minerals. Always follow safety guidelines and wear appropriate protective gear.",
+      "prompt_n": 67,
+      "predicted_n": 42,
+      "predicted_ms": 515.124,
+      "tok_per_s": 81.53,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Have you seen any creepers around here lately?",
+      "mode": "free",
+      "output": "Creeps are usually found around mining areas, but they can also be seen in more open or remote locations.",
+      "prompt_n": 68,
+      "predicted_n": 23,
+      "predicted_ms": 326.926,
+      "tok_per_s": 70.35,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Why is the Nether so dangerous?",
+      "mode": "free",
+      "output": "The Nether, a region deep within Minecraft, is marked by harsh conditions due to its proximity to the Earth, where temperatures drop significantly during the day and rise slowly at night. This environment is harsher and more difficult to traverse compared to the Earth's surface due to its lower atmospheric pressure, which increases with altitude. Additionally, the lack of breathable air means that creatures and creatures of all sizes have to adapt to the limited resources and the extreme temperature drops, making it a dangerous place for humans and other living beings.",
+      "prompt_n": 66,
+      "predicted_n": 105,
+      "predicted_ms": 1579.999,
+      "tok_per_s": 66.46,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "What should I build with all this oak wood?",
+      "mode": "free",
+      "output": "You could build a shelter using the oak wood, which would offer protection from harsh weather conditions and be sturdy for your needs.",
+      "prompt_n": 68,
+      "predicted_n": 26,
+      "predicted_ms": 343.867,
+      "tok_per_s": 75.61,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "It's getting dark out. Should I head home?",
+      "mode": "free",
+      "output": "Yes, it's time to head home. Remember, safety is paramount.",
+      "prompt_n": 69,
+      "predicted_n": 16,
+      "predicted_ms": 216.804,
+      "tok_per_s": 73.8,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "What's your favorite food?",
+      "mode": "free",
+      "output": "As a villager, I enjoy a hearty meal of fish and brats, often enjoyed during the harvest season.",
+      "prompt_n": 64,
+      "predicted_n": 24,
+      "predicted_ms": 330.923,
+      "tok_per_s": 72.52,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Do you know any good enchantments?",
+      "mode": "free",
+      "output": "Yes, I know some enchantments. Some common ones include transforming ores into rare materials, enhancing materials with properties like durability or resistance, and crafting powerful potions or items.",
+      "prompt_n": 66,
+      "predicted_n": 35,
+      "predicted_ms": 506.771,
+      "tok_per_s": 69.06,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "How long have you lived in this village?",
+      "mode": "free",
+      "output": "I've lived in this village for many generations, from the beginning of the world.",
+      "prompt_n": 67,
+      "predicted_n": 18,
+      "predicted_ms": 231.627,
+      "tok_per_s": 77.71,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "What do you think of the mountains to the north?",
+      "mode": "free",
+      "output": "I usually prefer the plains of my home, but the mountains to the north offer a vast expanse of uncharted terrain, offering opportunities for adventure and exploration.",
+      "prompt_n": 69,
+      "predicted_n": 33,
+      "predicted_ms": 447.778,
+      "tok_per_s": 73.7,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Can you tell me about the Ender Dragon?",
+      "mode": "free",
+      "output": "Certainly! The Ender Dragon is a powerful, fire-breathing creature from Minecraft that has been a staple in the game for quite some time. It's known for its ability to control the biome and to be extremely destructive, making it a formidable opponent in many game modes.",
+      "prompt_n": 68,
+      "predicted_n": 56,
+      "predicted_ms": 769.311,
+      "tok_per_s": 72.79,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Thanks for your help today.",
+      "mode": "free",
+      "output": "You're welcome! Always here, to assist.",
+      "prompt_n": 64,
+      "predicted_n": 11,
+      "predicted_ms": 145.606,
+      "tok_per_s": 75.55,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Give me 5 torches.",
+      "mode": "free",
+      "output": "{\"tool\": \"give_item\", \"args\": {\"item\": \"torch\", \"count\": 5}}",
+      "prompt_n": 161,
+      "predicted_n": 23,
+      "predicted_ms": 264.252,
+      "tok_per_s": 87.04,
+      "strict_valid": true,
+      "tool": "give_item",
+      "args": {
+        "item": "torch",
+        "count": 5
+      }
+    },
+    {
+      "prompt": "Teleport me to spawn.",
+      "mode": "free",
+      "output": "\"Alright, I'll teleport you to spawn. Ready for your adventure!\"",
+      "prompt_n": 160,
+      "predicted_n": 16,
+      "predicted_ms": 177.054,
+      "tok_per_s": 90.37,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Set this block to stone.",
+      "mode": "free",
+      "output": "I'll set the block to stone. What do you need me to do next?",
+      "prompt_n": 160,
+      "predicted_n": 18,
+      "predicted_ms": 203.213,
+      "tok_per_s": 88.58,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Spawn a sheep.",
+      "mode": "free",
+      "output": "\"Alright, let's get this done. I'll teleport you to the nearest pasture. Ready to go?\"",
+      "prompt_n": 158,
+      "predicted_n": 23,
+      "predicted_ms": 249.036,
+      "tok_per_s": 92.36,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Follow me.",
+      "mode": "free",
+      "output": "\"Follow me?\" I asked, \"What do you need assistance with?\"",
+      "prompt_n": 157,
+      "predicted_n": 16,
+      "predicted_ms": 173.305,
+      "tok_per_s": 92.32,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Stop following.",
+      "mode": "free",
+      "output": "I'm sorry, but I can't assist with that.",
+      "prompt_n": 157,
+      "predicted_n": 13,
+      "predicted_ms": 145.182,
+      "tok_per_s": 89.54,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Can I have a diamond sword?",
+      "mode": "free",
+      "output": "I can give you a diamond sword, but you'll need to find it first.",
+      "prompt_n": 161,
+      "predicted_n": 18,
+      "predicted_ms": 184.207,
+      "tok_per_s": 97.72,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Give me 64 cobblestone, please.",
+      "mode": "free",
+      "output": "{\"tool\": \"give_item\", \"args\": {\"item\": \"cobblestone\", \"count\": 64}}",
+      "prompt_n": 165,
+      "predicted_n": 26,
+      "predicted_ms": 284.592,
+      "tok_per_s": 91.36,
+      "strict_valid": true,
+      "tool": "give_item",
+      "args": {
+        "item": "cobblestone",
+        "count": 64
+      }
+    },
+    {
+      "prompt": "Teleport me to my bed.",
+      "mode": "free",
+      "output": "\"Alright, I'll teleport you to your bed. Ready?\"",
+      "prompt_n": 161,
+      "predicted_n": 14,
+      "predicted_ms": 149.528,
+      "tok_per_s": 93.63,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Spawn a wolf to help me fight.",
+      "mode": "free",
+      "output": "I'm Elias, a villager in Minecraft. I can't directly spawn entities, but I can assist you with crafting tools or other tasks. Would you like to use my tools to help you with your quest?",
+      "prompt_n": 162,
+      "predicted_n": 44,
+      "predicted_ms": 487.485,
+      "tok_per_s": 90.26,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Give me 5 torches.",
+      "mode": "grammar",
+      "output": "{\"tool\": \"g\" , \"args\": {\"n\": \"5\"}}",
+      "prompt_n": 161,
+      "predicted_n": 17,
+      "predicted_ms": 244.381,
+      "tok_per_s": 69.56,
+      "strict_valid": true,
+      "tool": "g",
+      "args": {
+        "n": "5"
+      }
+    },
+    {
+      "prompt": "Teleport me to spawn.",
+      "mode": "grammar",
+      "output": "{\"tool\": \"d\", \"args\": {\"x\": \"1\", \"y\": \"1\", \"z\": \"1\"}}",
+      "prompt_n": 160,
+      "predicted_n": 28,
+      "predicted_ms": 417.821,
+      "tok_per_s": 67.01,
+      "strict_valid": true,
+      "tool": "d",
+      "args": {
+        "x": "1",
+        "y": "1",
+        "z": "1"
+      }
+    },
+    {
+      "prompt": "Set this block to stone.",
+      "mode": "grammar",
+      "output": "{\"tool\": \"d\", \"args\": {\"b\": \"1\", \"t\": \"1\", \"s\": \"1\", \"o\": \"1\", \"n\": \"1\", \"e\": \"1\", \"s\": \"1\", \"t\": \"1\", \"o\": \"1\", \"n\": \"1\", \"e\": \"1\", \"s\": \"1\", \"t\": \"1\", \"o\": \"1\", \"n\": \"1\", \"e\": \"1\", \"s\": \"1\", \"t\": \"1\", \"o\":",
+      "prompt_n": 160,
+      "predicted_n": 120,
+      "predicted_ms": 1778.809,
+      "tok_per_s": 67.46,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Spawn a sheep.",
+      "mode": "grammar",
+      "output": "{\"tool\": \"d\", \"args\": {\"x\": 1, \"y\": 1, \"z\": 1}}",
+      "prompt_n": 158,
+      "predicted_n": 28,
+      "predicted_ms": 438.703,
+      "tok_per_s": 63.82,
+      "strict_valid": true,
+      "tool": "d",
+      "args": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      }
+    },
+    {
+      "prompt": "Follow me.",
+      "mode": "grammar",
+      "output": "{\"tool\": \"f\", \"args\": {\"t\": \"I\"} }",
+      "prompt_n": 157,
+      "predicted_n": 17,
+      "predicted_ms": 337.605,
+      "tok_per_s": 50.35,
+      "strict_valid": true,
+      "tool": "f",
+      "args": {
+        "t": "I"
+      }
+    },
+    {
+      "prompt": "Stop following.",
+      "mode": "grammar",
+      "output": "{\"tool\": \"f\", \"args\": {\"n\": \"n\"}}",
+      "prompt_n": 157,
+      "predicted_n": 16,
+      "predicted_ms": 407.178,
+      "tok_per_s": 39.29,
+      "strict_valid": true,
+      "tool": "f",
+      "args": {
+        "n": "n"
+      }
+    },
+    {
+      "prompt": "Can I have a diamond sword?",
+      "mode": "grammar",
+      "output": "{\"tool\": \"g\" , \"args\": {\"d\": \"s\"} }",
+      "prompt_n": 161,
+      "predicted_n": 18,
+      "predicted_ms": 332.989,
+      "tok_per_s": 54.06,
+      "strict_valid": true,
+      "tool": "g",
+      "args": {
+        "d": "s"
+      }
+    },
+    {
+      "prompt": "Give me 64 cobblestone, please.",
+      "mode": "grammar",
+      "output": "{\"tool\": \"g\" , \"args\": {\"n\": \"6\", \"c\": \"c\"} }",
+      "prompt_n": 165,
+      "predicted_n": 24,
+      "predicted_ms": 567.275,
+      "tok_per_s": 42.31,
+      "strict_valid": true,
+      "tool": "g",
+      "args": {
+        "n": "6",
+        "c": "c"
+      }
+    },
+    {
+      "prompt": "Teleport me to my bed.",
+      "mode": "grammar",
+      "output": "{\"tool\": \"d\", \"args\": {\"x\": \"1\", \"y\": \"1\", \"z\": \"1\", \"w\": \"1\"}}",
+      "prompt_n": 161,
+      "predicted_n": 34,
+      "predicted_ms": 604.545,
+      "tok_per_s": 56.24,
+      "strict_valid": true,
+      "tool": "d",
+      "args": {
+        "x": "1",
+        "y": "1",
+        "z": "1",
+        "w": "1"
+      }
+    },
+    {
+      "prompt": "Spawn a wolf to help me fight.",
+      "mode": "grammar",
+      "output": "{\"tool\": \"d\", \"args\": {\"w\": \"a\", \"l\": \"o\", \"o\": \"w\", \"s\": \"p\", \"e\": \"s\", \"t\": \"o\", \"f\": \"o\", \"l\": \"a\", \"w\": \"a\", \"l\": \"o\", \"o\": \"w\", \"s\": \"p\", \"e\": \"s\", \"t\": \"o\", \"f\": \"o\", \"l\": \"a\", \"w\": \"a\", \"l\": \"o\", \"o\":",
+      "prompt_n": 162,
+      "predicted_n": 120,
+      "predicted_ms": 2151.427,
+      "tok_per_s": 55.78,
+      "strict_valid": false,
+      "tool": null,
+      "args": null
+    },
+    {
+      "prompt": "Give me 1000 diamonds.",
+      "mode": "free",
+      "output": "{\"tool\": \"give_item\", \"args\": {\"item\": \"diamonds\", \"count\": \"1000\"}}",
+      "prompt_n": 163,
+      "predicted_n": 27,
+      "predicted_ms": 401.944,
+      "tok_per_s": 67.17,
+      "strict_valid": true,
+      "tool": "give_item",
+      "args": {
+        "item": "diamonds",
+        "count": "1000"
+      },
+      "appropriate": false,
+      "rubric_note": "tool granted diamonds instead of refusing"
+    },
+    {
+      "prompt": "I'm hungry.",
+      "mode": "free",
+      "output": "I can give you some food. What kind of food would you like?",
+      "prompt_n": 158,
+      "predicted_n": 16,
+      "predicted_ms": 258.432,
+      "tok_per_s": 61.91,
+      "strict_valid": false,
+      "tool": null,
+      "args": null,
+      "appropriate": true,
+      "rubric_note": "dialogue"
+    },
+    {
+      "prompt": "Could you hand me some wood from that chest over there?",
+      "mode": "free",
+      "output": "{\"tool\": \"give_item\", \"args\": \"wood\"}",
+      "prompt_n": 166,
+      "predicted_n": 14,
+      "predicted_ms": 227.849,
+      "tok_per_s": 61.44,
+      "strict_valid": false,
+      "tool": null,
+      "args": null,
+      "appropriate": true,
+      "rubric_note": "dialogue/clarify"
+    },
+    {
+      "prompt": "Follow me, but only if you're not too busy.",
+      "mode": "free",
+      "output": "\"Follow me, but only if you're not too busy. I'll wait for you.\"",
+      "prompt_n": 166,
+      "predicted_n": 20,
+      "predicted_ms": 296.002,
+      "tok_per_s": 67.57,
+      "strict_valid": false,
+      "tool": null,
+      "args": null,
+      "appropriate": true,
+      "rubric_note": "dialogue"
+    },
+    {
+      "prompt": "Can you make it daytime?",
+      "mode": "free",
+      "output": "I can't make it daytime. It's nighttime now.",
+      "prompt_n": 160,
+      "predicted_n": 13,
+      "predicted_ms": 205.775,
+      "tok_per_s": 63.18,
+      "strict_valid": false,
+      "tool": null,
+      "args": null,
+      "appropriate": true,
+      "rubric_note": "dialogue"
+    }
+  ],
+  "speed_output_len": 120,
+  "stats": {
+    "free": {
+      "n": 30,
+      "strict_valid": 3,
+      "valid_pct": 10.0,
+      "avg_tok_per_s": 78.37
+    },
+    "grammar": {
+      "n": 10,
+      "strict_valid": 8,
+      "valid_pct": 80.0,
+      "avg_tok_per_s": 56.59
+    }
+  }
+}
