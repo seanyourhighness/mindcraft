@@ -71,7 +71,7 @@ def read_prompts():
     return cats
 
 
-def chat(port, system, user, grammar=None, temperature=0.7):
+def chat(port, system, user, grammar=None, temperature=0.7, no_think=False):
     body = {
         "model": "local",
         "messages": [
@@ -82,6 +82,8 @@ def chat(port, system, user, grammar=None, temperature=0.7):
         "temperature": temperature,
         "stream": False,
     }
+    if no_think:
+        body["chat_template_kwargs"] = {"enable_thinking": False}
     if grammar is not None:
         body["grammar"] = grammar
     req = urllib.request.Request(
@@ -239,7 +241,8 @@ def run_candidate(args):
         def gen(system, user, category, mode, temperature, rubric=None,
                 rubric_idx=None, expected_tool=None):
             resp = chat(args.port, system, user, temperature=temperature,
-                        grammar=grammar if mode == "grammar" else None)
+                        grammar=grammar if mode == "grammar" else None,
+                        no_think=getattr(args, "no_think", False))
             content = resp["choices"][0]["message"]["content"]
             usage = resp.get("usage", {})
             pn = usage.get("prompt_tokens", -1)
@@ -345,6 +348,8 @@ def main():
     ap.add_argument("--model", required=True)
     ap.add_argument("--name", required=True)
     ap.add_argument("--port", type=int, default=18080)
+    ap.add_argument("--no-think", action="store_true",
+                    help="send enable_thinking=false (thinking models)")
     ap.add_argument("--server", default=str(DEFAULT_SERVER))
     args = ap.parse_args()
     OUT_DIR.mkdir(exist_ok=True)

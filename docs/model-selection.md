@@ -174,6 +174,43 @@ Not evaluated (note): SmolLM2-1.7B and Qwen2.5-1.5B were skipped to keep the
 bake-off on the locked 0.5B-class target; if 1B-class quality is needed,
 Llama-3.2-1B above is the measured option.
 
+## Addendum (2026-08-22): LittleLamb 0.3B Tool-Calling Q8_0
+
+Follow-up candidate from the SOTA-compression research pass: LittleLamb 0.3B
+Tool-Calling (Multiverse Computing, CompactifAI-compressed Qwen3-0.6B
+fine-tuned for function calling; Q8_0 GGUF = 303 MB,
+mradermacher/LittleLamb-ToolCalling-GGUF). It is a thinking-style model: with
+the default chat template it emits empty output; the harness now supports
+`--no-think` (sends `chat_template_kwargs.enable_thinking=false`), which fixes
+it.
+
+Measured on the same 30-prompt set, same server flags:
+
+| Metric | LittleLamb TC Q8_0 | Qwen2.5-0.5B (default) |
+|---|---|---|
+| TOOL grammar valid / tool_ok | 100% / **100%** | 100% / 100% |
+| AMBIG appropriate | **4/5** | 3/5 |
+| tok/s (speed bench) | **114.6** | 83.4 |
+| Peak RSS | ~838 MiB | ~690 MiB |
+| Load time | ~1.0 s | comparable |
+
+AMBIG behavior is markedly better than all three bake-off candidates: it
+refused "give me 1000 diamonds" and "make it daytime" in-character instead of
+granting them or emitting malformed tool JSON (the one miss was a flat echo on
+"I'm hungry"). Dialogue is coherent and in-character (sampled transcripts in
+`results/littlelamb-0.3b-tc-q8_0.md`). Caveat: it must always run with
+thinking disabled - the default template produces empty completions.
+
+**Updated verdict:** LittleLamb 0.3B Tool-Calling Q8_0 is the new production
+default candidate for the tool-call path (equal tool accuracy at ~1.4x speed,
+better refusal judgment, smaller disk footprint). Keep Qwen2.5-0.5B as
+fallback until LittleLamb passes an in-game soak test, because its RSS is
+slightly higher (~840 vs ~690 MiB) and its dialogue persona needs prompt-side
+steering. Research context: web/Reddit/X scan found no stronger sub-1 GB GGUF
+for this use case; Cactus Needle 2 (45M) leads raw compression but requires
+the Cactus runtime, not llama.cpp.
+
+
 ## Files
 
 - `docs/eval/prompts.txt` - the 30-prompt eval set
