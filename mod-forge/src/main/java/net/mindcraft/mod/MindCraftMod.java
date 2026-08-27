@@ -42,6 +42,7 @@ public class MindCraftMod {
     private static volatile TtsEngine tts;
     private static volatile SttEngine stt;
     private static volatile String ttsVoice = "jo.wav";
+    private static volatile VoiceCapture voiceCapture;
 
     public MindCraftMod() {
         var modBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -265,12 +266,16 @@ public class MindCraftMod {
      * Vera answers out loud — no typing, no UI.
      */
     public static boolean startVoiceLoop() {
+        if (isVoiceLoopActive()) {
+            return true; // already listening
+        }
         SttEngine s = stt;
         if (s == null || !s.isRunning()) {
             LOGGER.warn("[{}] voice loop unavailable: STT engine not running", MOD_ID);
             return false;
         }
-        VoiceCapture capture = new VoiceCapture();
+        VoiceCapture capture = voiceCapture == null ? new VoiceCapture() : voiceCapture;
+        voiceCapture = capture;
         boolean started = capture.start(wav -> {
             String text;
             try {
@@ -300,6 +305,24 @@ public class MindCraftMod {
             LOGGER.warn("[{}] no microphone available; voice loop disabled", MOD_ID);
         }
         return started;
+    }
+
+    /**
+     * Stop the voice loop (release the microphone). Idempotent: a no-op when
+     * the loop isn't running. The TTS/STT sidecars keep running; only capture
+     * stops.
+     */
+    public static synchronized void stopVoiceLoop() {
+        VoiceCapture c = voiceCapture;
+        if (c != null) {
+            c.stop();
+        }
+    }
+
+    /** True when the voice loop is actively capturing from the microphone. */
+    public static boolean isVoiceLoopActive() {
+        VoiceCapture c = voiceCapture;
+        return c != null && c.isCapturing();
     }
 
     /** Current STT engine instance, or null if the STT bundle is absent. */

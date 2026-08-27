@@ -332,4 +332,29 @@ public final class MindCraftAgent {
         server.execute(() ->
                 server.getPlayerList().broadcastSystemMessage(Component.literal(line), false));
     }
+
+    /**
+     * Announce a voice-loop state change ("Listening...", "Voice chat off")
+     * in chat. Routes through the integrated server when the agent is online
+     * (same "Vera:" channel as replies); falls back to a client-side system
+     * message when there is no server. Never throws.
+     */
+    public static void announceVoice(String text) {
+        if (text == null || text.isBlank()) {
+            return;
+        }
+        MindCraftAgent a = instance;
+        if (a != null) {
+            a.sayInChat(text);
+            return;
+        }
+        try {
+            net.minecraft.client.player.LocalPlayer p = Minecraft.getInstance().player;
+            if (p != null) {
+                p.sendSystemMessage(Component.literal("MindCraft: " + text.strip()));
+            }
+        } catch (RuntimeException e) {
+            LOGGER.debug("mindcraft voice cue failed", e);
+        }
+    }
 }
