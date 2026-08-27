@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vLLM Live</title>
+<style>
+  :root {
+    --bg: #0b0f14;
+    --card: #121a24;
+    --card2: #0f1620;
+    --line: #1e293b;
+    --text: #e6edf3;
+    --dim: #8b98a9;
+    --cyan: #22d3ee;
+    --amber: #fbbf24;
+    --green: #34d399;
+    --violet: #a78bfa;
+    --red: #f87171;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, sans-serif;
+    padding: 18px 22px 28px;
+    min-height: 100vh;
+  }
+  header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  h1 { font-size: 22px; font-weight: 700; letter-spacing: .5px; }
+  h1 span { color: var(--cyan); }
+  .meta { color: var(--dim); font-size: 13px; }
+  .status { margin-left: auto; display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--dim); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--red); display: inline-block; }
+  .dot.live { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px 12px;
+  }
+  .card h2 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.4px;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .gaugewrap { display: flex; align-items: center; gap: 16px; }
+  .gaugewrap svg { width: 130px; height: 78px; flex: none; }
+  .big {
+    font-size: 46px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -1px;
+  }
+  .unit { color: var(--dim); font-size: 13px; margin-top: 2px; }
+  .sub { color: var(--dim); font-size: 12px; margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .sub b { color: var(--text); font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chip {
+    background: var(--card2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 7px 11px;
+    font-size: 12px;
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .chip b { display: block; font-size: 17px; color: var(--text); font-weight: 650; }
+  .chartcard { margin-top: 14px; }
+  .chartcard canvas { width: 100%; height: 200px; display: block; }
+  .legend { display: flex; gap: 18px; font-size: 12px; color: var(--dim); margin-bottom: 6px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; }
+  .dim { opacity: .45; }
+  .c-cyan { color: var(--cyan); } .c-amber { color: var(--amber); }
+  .c-green { color: var(--green); } .c-violet { color: var(--violet); }
+</style>
+</head>
+<body>
+<header>
+  <h1>vLLM <span>LIVE</span></h1>
+  <div class="meta" id="modelLine">connecting…</div>
+  <div class="status"><span class="dot" id="dot"></span><span id="statusText">connecting…</span></div>
+</header>
+
+<section class="grid">
+  <div class="card">
+    <h2>Decode</h2>
+    <div class="gaugewrap">
+      <svg id="gDecode" viewBox="0 0 200 120"></svg>
+      <div>
+        <div class="big c-cyan" id="nDecode">0.0</div>
+        <div class="unit">tokens / sec</div>
+      </div>
+    </div>
+    <div class="sub" id="sDecode">peak 0.0 · avg 0.0</div>
+  </div>
+
+  <div class="card">
+    <h2>Prompt / Prefill</h2>
+    <div class="gaugewrap">
+      <svg id="gPrompt" viewBox="0 0 200 120"></svg>
+      <div>
+        <div class="big c-amber" id="nPrompt">0.0</div>
+        <div class="unit">tokens / sec</div>
+      </div>
+    </div>
+    <div class="sub" id="sPrompt">avg 0.0 over window</div>
+  </div>
+
+  <div class="card">
+    <h2>Per Sequence</h2>
+    <div class="gaugewrap">
+      <svg id="gSeq" viewBox="0 0 200 120"></svg>
+      <div>
+        <div class="big c-green" id="nSeq">0.0</div>
+        <div class="unit">tok/s ÷ running seqs</div>
+      </div>
+    </div>
+    <div class="sub" id="sSeq">running 0</div>
+  </div>
+
+  <div class="card">
+    <h2>Draft Acceptance</h2>
+    <div class="gaugewrap">
+      <svg id="gDraft" viewBox="0 0 200 120"></svg>
+      <div>
+        <div class="big c-violet" id="nDraft">0.0</div>
+        <div class="unit">% per-pos avg</div>
+      </div>
+    </div>
+    <div class="sub" id="sDraft">cumulative 0.0%</div>
+  </div>
+</section>
+
+<section class="chips">
+  <div class="chip">Running <b id="cRunning">0</b></div>
+  <div class="chip">Waiting <b id="cWaiting">0</b></div>
+  <div class="chip">KV Cache <b id="cKv">0%</b></div>
+  <div class="chip">Prefix Hit <b id="cPrefix">0%</b></div>
+  <div class="chip">Avg TTFT <b id="cTtft">–</b></div>
+  <div class="chip">Avg Inter-token <b id="cInter">–</b></div>
+  <div class="chip">Requests Done <b id="cDone">0</b></div>
+  <div class="chip">Engine <b id="cEngine">–</b></div>
+</section>
+
+<section class="card chartcard">
+  <div class="legend">
+    <span><i style="background:var(--cyan)"></i>decode tok/s</span>
+    <span><i style="background:var(--amber)"></i>prompt tok/s</span>
+    <span id="chartRange">last 6 min</span>
+  </div>
+  <canvas id="chart"></canvas>
+</section>
+
+<script>const POLL_MS = 2000;
+const MAX_POINTS = 180;
+const fmt1 = v => (v >= 1000 ? v.toFixed(0) : v.toFixed(1));
+
+let prev = null;          // previous counter snapshot {ts, generation, prompt, drafts, accepted}
+let hist = [];            // {ts, decode, prompt}
+let peakDecode = 0;
+let draftRateSmooth = 0;
+
+const $ = id => document.getElementById(id);
+
+function buildGauge(svgId, color) {
+  const svg = $(svgId);
+  const ns = "http://www.w3.org/2000/svg";
+  const cx = 100, cy = 100, r = 78;
+  const arc = "M " + (cx - r) + " " + cy + " A " + r + " " + r + " 0 0 1 " + (cx + r) + " " + cy;
+  const track = document.createElementNS(ns, "path");
+  track.setAttribute("d", arc);
+  track.setAttribute("fill", "none");
+  track.setAttribute("stroke", "#1c2836");
+  track.setAttribute("stroke-width", "13");
+  track.setAttribute("stroke-linecap", "round");
+  svg.appendChild(track);
+  const prog = document.createElementNS(ns, "path");
+  prog.setAttribute("d", arc);
+  prog.setAttribute("fill", "none");
+  prog.setAttribute("stroke", color);
+  prog.setAttribute("stroke-width", "13");
+  prog.setAttribute("stroke-linecap", "round");
+  svg.appendChild(prog);
+  const C = Math.PI * r;
+  prog.style.strokeDasharray = C;
+  prog.style.strokeDashoffset = C;
+  const needle = document.createElementNS(ns, "line");
+  needle.setAttribute("x1", cx); needle.setAttribute("y1", cy + 3);
+  needle.setAttribute("x2", cx); needle.setAttribute("y2", cy - r + 22);
+  needle.setAttribute("stroke", "#e2e8f0");
+  needle.setAttribute("stroke-width", "3.5");
+  needle.setAttribute("stroke-linecap", "round");
+  svg.appendChild(needle);
+  return function update(frac) {
+    frac = Math.max(0, Math.min(1, frac));
+    prog.style.strokeDashoffset = C * (1 - frac);
+    needle.setAttribute("transform", "rotate(" + (-90 + frac * 180) + " " + cx + " " + cy + ")");
+  };
+}
+
+const upDecode = buildGauge("gDecode", "#22d3ee");
+const upPrompt = buildGauge("gPrompt", "#fbbf24");
+const upSeq = buildGauge("gSeq", "#34d399");
+const upDraft = buildGauge("gDraft", "#a78bfa");
+
+function rate(cur, prevKey, dt) {
+  const p = prev ? prev[prevKey] : null;
+  const c = cur[prevKey];
+  if (p == null || c < p) return 0;          // first sample or counter reset
+  return dt > 0 ? (c - p) / dt : 0;
+}
+
+function updateReadouts(cur, dt) {
+  const running = cur.num_requests_running || 0;
+  const waiting = cur.num_requests_waiting || 0;
+  const decode = rate(cur, "generation_tokens_total", dt);
+  const prompt = rate(cur, "prompt_tokens_total", dt);
+  const drafts = rate(cur, "spec_decode_num_drafts_total", dt);
+  const accepted = rate(cur, "spec_decode_num_accepted_tokens_total", dt);
+  const perSeq = running > 0 ? decode / running : 0;
+
+  // Mean acceptance length = accepted tokens per draft round (server: "Mean acceptance length")
+  const draftCumLen = cur.spec_decode_num_drafts_total > 0
+    ? cur.spec_decode_num_accepted_tokens_total / cur.spec_decode_num_drafts_total : 0;
+  const draftLiveLen = drafts > 0 ? accepted / drafts : draftCumLen;
+
+  // Avg per-position acceptance rate (server: "Avg Draft acceptance rate")
+  const draftsDelta = (prev && cur.spec_decode_num_drafts_total >= prev.spec_decode_num_drafts_total)
+    ? cur.spec_decode_num_drafts_total - prev.spec_decode_num_drafts_total : 0;
+  const perPos = cur.spec_decode_accepted_per_pos || [];
+  const nPos = perPos.length;
+  let draftRate = 0;
+  if (nPos > 0 && cur.spec_decode_num_drafts_total > 0) {
+    let rateSum = 0;
+    if (draftsDelta > 0 && prev && prev.spec_decode_accepted_per_pos) {
+      const pp = prev.spec_decode_accepted_per_pos;
+      for (let i = 0; i < nPos; i++) rateSum += ((perPos[i] - (pp[i] || 0)) / draftsDelta);
+    } else {
+      for (let i = 0; i < nPos; i++) rateSum += perPos[i] / cur.spec_decode_num_drafts_total;
+    }
+    draftRate = (rateSum / nPos) * 100;
+  }
+  draftRate = Math.max(0, Math.min(100, draftRate));
+  draftRateSmooth = draftRateSmooth ? draftRateSmooth * 0.6 + draftRate * 0.4 : draftRate;
+  draftRate = draftRateSmooth;
+
+  peakDecode = Math.max(peakDecode, decode);
+  hist.push({ ts: Date.now(), decode, prompt });
+  if (hist.length > MAX_POINTS) hist.shift();
+  const avgDecode = hist.slice(-60).reduce((a, h) => a + h.decode, 0) / Math.min(60, hist.length);
+  const avgPrompt = hist.slice(-60).reduce((a, h) => a + h.prompt, 0) / Math.min(60, hist.length);
+
+  // Decode gauge: auto-scale cap in 50s, min 150
+  const cap = Math.max(150, Math.ceil(peakDecode / 50) * 50);
+  upDecode(decode / cap);
+  $("nDecode").textContent = fmt1(decode);
+  $("sDecode").innerHTML = "peak <b>" + fmt1(peakDecode) + "</b> · avg <b>" + fmt1(avgDecode) + "</b>";
+
+  const pcap = Math.max(200, Math.ceil(avgPrompt / 200) * 200);
+  upPrompt(prompt / pcap);
+  $("nPrompt").textContent = fmt1(prompt);
+  $("sPrompt").innerHTML = "avg <b>" + fmt1(avgPrompt) + "</b> over window";
+
+  upSeq(perSeq / 40);
+  $("nSeq").textContent = perSeq > 0 ? fmt1(perSeq) : "0.0";
+  $("sSeq").innerHTML = "running <b>" + running + "</b> seqs";
+
+  upDraft(draftRate / 100);
+  $("nDraft").textContent = draftRate.toFixed(1);
+  $("sDraft").innerHTML = "mean length <b>" + draftLiveLen.toFixed(1) + "</b> · cum <b>" + draftCumLen.toFixed(1) + "</b> tokens/round";
+
+  $("cRunning").textContent = running;
+  $("cWaiting").textContent = waiting;
+  $("cKv").textContent = (cur.kv_cache_usage_perc || 0).toFixed(1) + "%";
+  const pqueries = cur.prefix_cache_queries_total || 0;
+  const phits = cur.prefix_cache_hits_total || 0;
+  $("cPrefix").textContent = pqueries > 0 ? ((phits / pqueries) * 100).toFixed(1) + "%" : "–";
+  const ttftC = cur.time_to_first_token_seconds_count || 0;
+  $("cTtft").textContent = ttftC > 0 ? Math.round((cur.time_to_first_token_seconds_sum / ttftC) * 1000) + " ms" : "–";
+  const itC = cur.inter_token_latency_seconds_count || 0;
+  const itMs = itC > 0 ? (cur.inter_token_latency_seconds_sum / itC) * 1000 : null;
+  $("cInter").textContent = itMs != null ? itMs.toFixed(1) + " ms" : "–";
+  $("cDone").textContent = Math.round(cur.request_success_total || 0);
+  $("cEngine").textContent = cur.engine_awake ? "awake" : "sleep";
+  drawChart();
+}
+
+function drawChart() {
+  const canvas = $("chart");
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+    canvas.width = w * dpr; canvas.height = h * dpr;
+  }
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  if (hist.length < 2) return;
+  let maxV = 10;
+  hist.forEach(p => { maxV = Math.max(maxV, p.decode, p.prompt); });
+  maxV *= 1.15;
+  ctx.strokeStyle = "#1c2836"; ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = h - (i / 4) * (h - 12) - 6;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    ctx.fillStyle = "#5b6b7f"; ctx.font = "10px sans-serif";
+    ctx.fillText(Math.round(maxV * i / 4), 4, y - 3);
+  }
+  const plot = (key, color) => {
+    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.beginPath();
+    hist.forEach((p, i) => {
+      const x = (i / (hist.length - 1)) * w;
+      const y = h - (p[key] / maxV) * (h - 12) - 6;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+  };
+  plot("prompt", "#fbbf24");
+  plot("decode", "#22d3ee");
+}
+
+async function poll() {
+  try {
+    const resp = await fetch("/api/metrics", { cache: "no-store" });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    const cur = data.values;
+    const now = Date.now();
+    if (prev) {
+      const dt = (now - prev.ts) / 1000;
+      if (dt > 0) updateReadouts(cur, dt);
+    }
+    prev = { ts: now, ...cur };
+    $("modelLine").textContent = data.model + " · " + new Date(now).toLocaleTimeString();
+    $("dot").className = "dot live";
+    $("statusText").textContent = "live · updated " + Math.round(POLL_MS / 1000) + "s";
+    document.body.classList.remove("dim");
+  } catch (err) {
+    $("dot").className = "dot";
+    $("statusText").textContent = "offline · " + err.message;
+    $("modelLine").textContent = "waiting for server…";
+    document.body.classList.add("dim");
+  }
+}
+
+setInterval(poll, POLL_MS);
+poll();</script>
+</body>
+</html>
