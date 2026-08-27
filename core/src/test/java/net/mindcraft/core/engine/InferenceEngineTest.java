@@ -62,7 +62,9 @@ class InferenceEngineTest {
             assertTrue(engine.isRunning(), "engine must be running after start()");
             assertTrue(engine.port() > 0, "a real port must have been resolved");
 
-            GenOptions opts = new GenOptions(30, 0.2, 42L, null);
+            // LittleLamb is a thinking-template model: without enable_thinking=false
+            // it returns empty output (see README "Critical model quirk").
+            GenOptions opts = GenOptions.noThink(30, 0.2, 42L);
             String out1 = engine.generate("Say hello in one short sentence.", opts);
             long tGen = System.nanoTime();
 
