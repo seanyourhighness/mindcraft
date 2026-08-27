@@ -37,11 +37,9 @@ The STT half of the voice loop. Pairs with the TTS POC:
   (libwhisper, libggml{,-base,-cpu}) + `models/ggml-small.en.bin` (480 MB).
   ~469 MB total.
 - **Windows**: `/tmp/mindcraft-stt-bundle-win/` — `bin/whisper-server.exe`
-  (PE32+, whisper/ggml statically linked) + 3 mingw runtime DLLs
-  (libstdc++-6, libgomp-1, libgcc_s_seh-1) + model. ~32 MB + model.
-  **Cross-compiled from WSL via mingw-w64** — needs one smoke test on a real
-  Windows box (run `whisper-server.exe --port 8080 --model models/... --no-gpu`
-  and hit `/health`).
+  (PE32+, whisper/ggml statically linked) + 4 mingw runtime DLLs
+  (libstdc++-6, libgomp-1, libgcc_s_seh-1, libwinpthread-1) + model. ~32 MB + model.
+  **Cross-compiled from WSL via mingw-w64** — verified 2026-08-26 on the Windows host: /health OK, and a TTS-generated clip transcribed exactly.
 
 ### Windows cross-compile gotcha (verified)
 Ubuntu's mingw-w64 headers lack `THREAD_POWER_THROTTLING_STATE` (Win8.1+
@@ -56,8 +54,7 @@ flags so that code block is excluded. Without it the build fails at
 (2nd arg = Windows output; requires `g++-mingw-w64-x86-64` installed.)
 
 ## Open / next
-- **Windows smoke test** — run the .exe once on the Windows host (it's
-  cross-compiled, not executed, here).
+- ~~Windows smoke test~~ — DONE 2026-08-26: verified on the Windows host (see above).
 - **Mic in-game UX** — `startVoiceLoop()` is exposed; needs a trigger
   (hotkey or NPC-interaction event) wired to a client screen. VAD thresholds
   may need tuning per-mic (default 0.02 RMS).
