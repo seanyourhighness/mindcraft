@@ -25,21 +25,23 @@ import java.util.UUID;
  * (ProcessBuilder + java.net.http.HttpClient). Same locked design as
  * {@link TtsEngine} and {@link InferenceEngine} (HTTP-to-server, no JNI).
  *
- * <p>whisper-server is OpenAI-compatible:
+ * <p>whisper-server (whisper.cpp {@code examples/server}) exposes:
  * <ul>
- *   <li>{@code POST /v1/audio/transcriptions} — multipart (audio file +
- *       params) returning JSON with a {@code text} field</li>
- *   <li>{@code POST /v1/audio/translations} — same shape, translation mode</li>
+ *   <li>{@code GET /health} — readiness probe</li>
+ *   <li>{@code POST /inference} — multipart: {@code file} (audio) + optional
+ *       {@code language}, {@code response_format} (default json),
+ *       {@code temperature}, {@code translate}. Returns
+ *       {@code {"text": "..."}} (json format).</li>
  * </ul>
  *
  * <p>Lifecycle mirrors {@link TtsEngine}: {@link #start()} spawns the server
- * and blocks until it accepts connections; {@link #stop()} sends a graceful
- * terminate, waits up to 5s, then force-destroys. All three are safe to call
- * repeatedly.
+ * (model loads at startup, so readiness = /health answering) and blocks until
+ * it responds; {@link #stop()} sends a graceful terminate, waits up to 5s,
+ * then force-destroys. All are safe to call repeatedly.
  */
 public final class SttEngine implements AutoCloseable {
 
-    private static final Duration START_TIMEOUT = Duration.ofSeconds(60);
+    private static final Duration START_TIMEOUT = Duration.ofSeconds(120);
     private static final Duration STOP_GRACE = Duration.ofSeconds(5);
     private static final Duration HTTP_TIMEOUT = Duration.ofSeconds(120);
     private static final int STDOUT_TAIL = 30;
@@ -60,12 +62,11 @@ public final class SttEngine implements AutoCloseable {
     }
 
     /**
-     * Spawn whisper-server and wait until it accepts connections. Idempotent:
-     * no-op if already running.
+     * Spawn whisper-server and wait until /health answers. Idempotent: no-op
+     * if already running.
      *
      * @throws EngineException if the binary cannot be launched or the server
-     *         does not come up within 60s (message includes the last stderr
-     *         lines)
+     *         does not come up within 120s (model load included)
      */
     public synchronized void start() throws EngineException {
         if (process != null && process.isAlive()) {
@@ -76,7 +77,15 @@ public final class SttEngine implements AutoCloseable {
 
         Process p;
         try {
-            p = new ProcessBuilder(buildCommand()).start();
+            ProcessBuilder pb = new ProcessBuilder(buildCommand());
+            // Make the bundled libwhisper/libggml resolvable regardless of the
+            // game CWD: point LD_LIBRARY_PATH at the binary's own directory
+            // (the .so files ship next to whisper-server).
+            String binDir = config.binary().toAbsolutePath().getParent().toString();
+            String existing = pb.environment().get("LD_LIBRARY_PATH");
+            pb.environment().put("LD_LIBRARY_PATH",
+                    existing == null || existing.isEmpty() ? binDir : binDir + ":" + existing);
+            p = pb.start();
         } catch (IOException e) {
             throw new EngineException("failed to launch whisper-server at " + config.binary(), e);
         }
@@ -101,6 +110,8 @@ public final class SttEngine implements AutoCloseable {
         cmd.add(config.modelPath().toString());
         cmd.add("--threads");
         cmd.add(String.valueOf(config.threads()));
+        // CPU-only by default; a GPU build ignores this harmlessly.
+        cmd.add("--no-gpu");
         if (!config.language().isBlank()) {
             cmd.add("--language");
             cmd.add(config.language());
@@ -109,9 +120,9 @@ public final class SttEngine implements AutoCloseable {
         return cmd;
     }
 
-    /** whisper-server has no /health endpoint; poll the root until it answers. */
+    /** Poll GET /health until it answers (model is loaded at startup). */
     private void waitForReady() throws EngineException {
-        URI root = URI.create("http://" + config.host() + ":" + resolvedPort + "/");
+        URI health = URI.create("http://" + config.host() + ":" + resolvedPort + "/health");
         long deadline = System.nanoTime() + START_TIMEOUT.toNanos();
         while (System.nanoTime() < deadline) {
             if (!process.isAlive()) {
@@ -119,11 +130,10 @@ public final class SttEngine implements AutoCloseable {
                         + "). stderr tail:\n" + tailText(stderrTail));
             }
             try {
-                HttpRequest req = HttpRequest.newBuilder(root)
+                HttpRequest req = HttpRequest.newBuilder(health)
                         .timeout(Duration.ofSeconds(2)).GET().build();
                 HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
-                // Any HTTP response (200/404/405) means the server is up.
-                if (resp.statusCode() > 0) {
+                if (resp.statusCode() == 200) {
                     return;
                 }
             } catch (IOException ignored) {
@@ -133,7 +143,7 @@ public final class SttEngine implements AutoCloseable {
                 throw new EngineException("interrupted while waiting for whisper-server", e);
             }
             try {
-                Thread.sleep(200);
+                Thread.sleep(250);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new EngineException("interrupted while waiting for whisper-server", e);
@@ -144,31 +154,30 @@ public final class SttEngine implements AutoCloseable {
     }
 
     /**
-     * Transcribe 16 kHz mono PCM (or a WAV file) to text.
+     * Transcribe audio (WAV or any format whisper-server can read; WAV is the
+     * safe bet) to text.
      *
-     * @param audioBytes  audio payload (WAV recommended; raw PCM16 16 kHz mono
-     *                    also accepted by whisper-server)
+     * @param audioBytes  audio payload
      * @param fileName    logical file name for the multipart part
      * @return the transcribed text (trimmed), or empty string if silence
      */
     public String transcribe(byte[] audioBytes, String fileName) throws EngineException {
-        return transcribe(audioBytes, fileName, "/v1/audio/transcriptions");
+        return postInference(audioBytes, fileName, false);
     }
 
-    /** Translate 16 kHz audio to English text (whisper translation mode). */
+    /** Translate non-English audio to English text (whisper translation mode). */
     public String translate(byte[] audioBytes, String fileName) throws EngineException {
-        return transcribe(audioBytes, fileName, "/v1/audio/translations");
+        return postInference(audioBytes, fileName, true);
     }
 
-    private String transcribe(byte[] audioBytes, String fileName, String path) throws EngineException {
+    private String postInference(byte[] audioBytes, String fileName, boolean translate) throws EngineException {
         if (audioBytes == null || audioBytes.length == 0) {
             throw new IllegalArgumentException("audio must not be empty");
         }
         requireRunning();
         String boundary = "----mindcraft" + UUID.randomUUID();
-        String contentType = guessContentType(fileName);
-        byte[] body = multipartBody(audioBytes, fileName, contentType, boundary);
-        String response = postMultipart(path, body, boundary);
+        byte[] body = multipartBody(audioBytes, fileName, boundary, translate);
+        String response = postMultipart("/inference", body, boundary);
         return extractText(response);
     }
 
@@ -198,18 +207,19 @@ public final class SttEngine implements AutoCloseable {
         }
     }
 
-    /** Build a single-file multipart body (audio + model + params) using the given boundary. */
-    private byte[] multipartBody(byte[] audio, String fileName, String contentType, String boundary) {
+    /**
+     * Build the multipart body for POST /inference:
+     * {@code file} (audio) + {@code response_format=json} + optional
+     * {@code language} / {@code translate}.
+     */
+    private byte[] multipartBody(byte[] audio, String fileName, String boundary, boolean translate) {
         StringBuilder sb = new StringBuilder();
         sb.append("--").append(boundary).append("\r\n");
         sb.append("Content-Disposition: form-data; name=\"file\"; filename=\"").append(fileName).append("\"\r\n");
-        sb.append("Content-Type: ").append(contentType).append("\r\n\r\n");
+        sb.append("Content-Type: ").append(guessContentType(fileName)).append("\r\n\r\n");
         byte[] head = sb.toString().getBytes(StandardCharsets.UTF_8);
 
         sb.setLength(0);
-        sb.append("--").append(boundary).append("\r\n");
-        sb.append("Content-Disposition: form-data; name=\"model\"\r\n\r\n");
-        sb.append("whisper\r\n");
         sb.append("--").append(boundary).append("\r\n");
         sb.append("Content-Disposition: form-data; name=\"response_format\"\r\n\r\n");
         sb.append("json\r\n");
@@ -218,9 +228,11 @@ public final class SttEngine implements AutoCloseable {
             sb.append("Content-Disposition: form-data; name=\"language\"\r\n\r\n");
             sb.append(config.language()).append("\r\n");
         }
-        sb.append("--").append(boundary).append("\r\n");
-        sb.append("Content-Disposition: form-data; name=\"temperature\"\r\n\r\n");
-        sb.append("0.0\r\n");
+        if (translate) {
+            sb.append("--").append(boundary).append("\r\n");
+            sb.append("Content-Disposition: form-data; name=\"translate\"\r\n\r\n");
+            sb.append("true\r\n");
+        }
         sb.append("--").append(boundary).append("--\r\n");
         byte[] tail = sb.toString().getBytes(StandardCharsets.UTF_8);
 
@@ -232,8 +244,8 @@ public final class SttEngine implements AutoCloseable {
     }
 
     private static String extractText(String json) {
-        // whisper-server returns {"text": "..."} — pull the text field without a
-        // full JSON parser (the response is a single flat object).
+        // whisper-server returns {"text": "..."} (json format) — pull the text
+        // field without a full JSON parser (the response is a flat object).
         int i = json.indexOf("\"text\"");
         if (i < 0) {
             return "";

@@ -225,6 +225,49 @@ public class MindCraftMod {
         return TtsAudioPlayer.play(wav, 1.0f, 1.0f);
     }
 
+    /**
+     * Start continuous microphone capture. On each detected speech clip the
+     * full voice loop runs: STT transcribes, the LLM replies, and the reply
+     * is spoken in the cloned voice. No-op (returns false) if no mic or no
+     * STT engine is available. Must be called on the client thread.
+     *
+     * <p>This is the immersive entry point: the player talks to the mic and
+     * Vera answers out loud — no typing, no UI.
+     */
+    public static boolean startVoiceLoop() {
+        SttEngine s = stt;
+        if (s == null || !s.isRunning()) {
+            LOGGER.warn("[{}] voice loop unavailable: STT engine not running", MOD_ID);
+            return false;
+        }
+        VoiceCapture capture = new VoiceCapture();
+        boolean started = capture.start(wav -> {
+            String text;
+            try {
+                text = s.transcribe(wav, "mic.wav");
+            } catch (EngineException e) {
+                LOGGER.warn("[{}] STT failed on mic clip", MOD_ID, e);
+                return;
+            }
+            if (text == null || text.isBlank()) {
+                return; // silence / no speech
+            }
+            LOGGER.info("[{}] heard: {}", MOD_ID, text);
+            String reply;
+            try {
+                reply = generate(text);
+            } catch (EngineException e) {
+                LOGGER.warn("[{}] LLM reply failed", MOD_ID, e);
+                return;
+            }
+            speakAndPlay(reply);
+        });
+        if (!started) {
+            LOGGER.warn("[{}] no microphone available; voice loop disabled", MOD_ID);
+        }
+        return started;
+    }
+
     /** Current STT engine instance, or null if the STT bundle is absent. */
     public static SttEngine stt() {
         return stt;
