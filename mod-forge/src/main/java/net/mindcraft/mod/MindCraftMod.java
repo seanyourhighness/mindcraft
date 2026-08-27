@@ -1,5 +1,6 @@
 package net.mindcraft.mod;
 
+import net.mindcraft.core.agent.AgentRuntime;
 import net.mindcraft.core.engine.EngineConfig;
 import net.mindcraft.core.engine.EngineException;
 import net.mindcraft.core.engine.GenOptions;
@@ -8,6 +9,7 @@ import net.mindcraft.core.engine.SttConfig;
 import net.mindcraft.core.engine.SttEngine;
 import net.mindcraft.core.engine.TtsConfig;
 import net.mindcraft.core.engine.TtsEngine;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -18,6 +20,9 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * MindCraft main entrypoint (Forge). On client setup, spawns llama-server,
@@ -36,6 +41,8 @@ public class MindCraftMod {
     private static volatile TtsEngine tts;
     private static volatile SttEngine stt;
     private static volatile String ttsVoice = "jo.wav";
+    private static volatile AgentRuntime agent;
+    private static ExecutorService agentExecutor;
 
     public MindCraftMod() {
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
@@ -55,6 +62,7 @@ public class MindCraftMod {
             }
             startTts();
             startStt();
+            startAgent();
         });
     }
 
@@ -116,6 +124,56 @@ public class MindCraftMod {
                     MOD_ID, e.getClass().getSimpleName(), e.getMessage());
             stt = null;
         }
+    }
+
+    /**
+     * Start the lightweight agent: a watch set (mobs, biomes, chat keywords,
+     * item use, block breaks) that pings the local LLM, which reacts with a
+     * spoken line (TTS) or an in-game tool call.
+     *
+     * <p>The LLM call runs on a dedicated daemon thread — a blocking
+     * generation must never stall the client thread. Sinks hop back to the
+     * client thread for audio playback and world actions.
+     *
+     * <p>Degraded-safe: if the inference engine is down the agent still
+     * registers its sensors (they just log instead of reasoning); if TTS is
+     * down, reactions fall back to chat text.
+     */
+    private void startAgent() {
+        agentExecutor = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "mindcraft-agent");
+            t.setDaemon(true);
+            return t;
+        });
+        AgentRuntime runtime = new AgentRuntime(prompt -> {
+            InferenceEngine e = engine;
+            if (e == null || !e.isRunning()) {
+                return null; // LLM down: the agent stays quiet, world keeps running
+            }
+            return e.generate(prompt, GenOptions.noThink(120, 0.7));
+        })
+                .reasonOn(agentExecutor) // never block the client thread on a generation
+                .persona("You are Vera, a warm, playful mining companion in Minecraft.")
+                .speechSink(line -> {
+                    // Speak + play on the client thread.
+                    Minecraft.getInstance().submit(() -> speakAndPlay(line));
+                })
+                .toolSink((name, args) -> {
+                    LOGGER.info("[{}] agent tool call: {} {}", MOD_ID, name, args);
+                    // Tool execution (give_item, teleport, ...) lands in a later task;
+                    // for now the call is logged and the agent stays safe.
+                });
+        WorldSensors.defaultWatches(runtime);
+        agent = runtime;
+        WorldSensors sensors = new WorldSensors(agent);
+        sensors.register();
+        LOGGER.info("[{}] agent running: {} watches, LLM on port {}",
+                MOD_ID, "default", engine != null ? engine.port() : "unavailable");
+    }
+
+    /** Current agent instance, or null if startup failed. */
+    public static AgentRuntime agent() {
+        return agent;
     }
 
     private static SttEngine createStt() throws EngineException {
