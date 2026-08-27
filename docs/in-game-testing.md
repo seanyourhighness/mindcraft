@@ -8,7 +8,7 @@ goal document's milestones so the verification is quick and unambiguous.
 ## Setup
 
 1. Build the mod jars:
-   - Forge 1.20.1: `./gradlew :mod-forge:build` → `mod-forge/build/libs/mindcraft-forge-<v>.jar`
+   - Forge 1.20.1: `./gradlew :mod-forge:build` → `mod-forge/build/libs/clankerjockey-forge-<v>.jar`
    - Fabric 1.21.1: `./gradlew :mod-fabric:build` → `mod-fabric/build/libs/*.jar`
 2. Create/install a modded instance:
    - Forge: 1.20.1 with Forge 47.4.0 (or newer 47.x); put the jar in `mods/`.
@@ -19,8 +19,8 @@ goal document's milestones so the verification is quick and unambiguous.
    ```
    Expected layout:
    ```
-   <game-dir>/mindcraft/bin/llama-server[.exe]
-   <game-dir>/mindcraft/models/littlelamb-0.3b-toolcalling-q8_0.gguf
+   <game-dir>/clankerjockey/bin/llama-server[.exe]
+   <game-dir>/clankerjockey/models/littlelamb-0.3b-toolcalling-q8_0.gguf
    ```
    `--verify` boots the bundled server and health-checks it before you launch.
 4. Launch the game, open a single-player world. Watch the log for:

@@ -1,4 +1,4 @@
-# MindCraft STT POC — whisper.cpp sidecar (mic → text)
+# ClankerJockey STT POC — whisper.cpp sidecar (mic → text)
 
 ## Verdict: **GO — verified end-to-end** (Linux + Windows cross-compile)
 The STT half of the voice loop. Pairs with the TTS POC:
@@ -18,7 +18,7 @@ The STT half of the voice loop. Pairs with the TTS POC:
   16-bit via `javax.sound.sampled`, energy-VAD endpointing (250 ms open,
   700 ms close, 15 s max, 300 ms min), emits self-contained WAV clips.
   Missing mic degrades to no-op.
-- **`MindCraftMod.startVoiceLoop()`** — the immersive entry point:
+- **`ClankerJockeyMod.startVoiceLoop()`** — the immersive entry point:
   mic clip → `SttEngine.transcribe` → `generate()` (LLM) →
   `speakAndPlay()` (TTS + in-game audio). No typing, no UI.
 
@@ -33,10 +33,10 @@ The STT half of the voice loop. Pairs with the TTS POC:
   `ggml-tiny.en` model (~75 MB) trades accuracy for ~2× speed if needed.
 
 ## Bundles (both built + assembled)
-- **Linux**: `/tmp/mindcraft-stt-bundle/` — `bin/whisper-server` + 4 .so
+- **Linux**: `/tmp/clankerjockey-stt-bundle/` — `bin/whisper-server` + 4 .so
   (libwhisper, libggml{,-base,-cpu}) + `models/ggml-small.en.bin` (480 MB).
   ~469 MB total.
-- **Windows**: `/tmp/mindcraft-stt-bundle-win/` — `bin/whisper-server.exe`
+- **Windows**: `/tmp/clankerjockey-stt-bundle-win/` — `bin/whisper-server.exe`
   (PE32+, whisper/ggml statically linked) + 4 mingw runtime DLLs
   (libstdc++-6, libgomp-1, libgcc_s_seh-1, libwinpthread-1) + model. ~32 MB + model.
   **Cross-compiled from WSL via mingw-w64** — verified 2026-08-26 on the Windows host: /health OK, and a TTS-generated clip transcribed exactly.
@@ -49,7 +49,7 @@ flags so that code block is excluded. Without it the build fails at
 
 ## Reproduce
 ```
-./build-stt-bundle.sh /tmp/mindcraft-stt-bundle /tmp/mindcraft-stt-bundle-win
+./build-stt-bundle.sh /tmp/clankerjockey-stt-bundle /tmp/clankerjockey-stt-bundle-win
 ```
 (2nd arg = Windows output; requires `g++-mingw-w64-x86-64` installed.)
 
@@ -58,9 +58,9 @@ flags so that code block is excluded. Without it the build fails at
 - **Mic in-game UX** — `startVoiceLoop()` is exposed; needs a trigger
   (hotkey or NPC-interaction event) wired to a client screen. VAD thresholds
   may need tuning per-mic (default 0.02 RMS).
-- **Fabric**: wire `SttEngine`/`VoiceCapture` into `MindCraftClient` once the
+- **Fabric**: wire `SttEngine`/`VoiceCapture` into `ClankerJockeyClient` once the
   Fabric chat path exists.
 
 ## Links
-- Sibling: [[2026-08-26-mindcraft-tts-pockettts-voice-clone]]
-- Parent: [[2026-08-21-mindcraft-minecraft-cpu-inference-mod]]
+- Sibling: [[2026-08-26-clankerjockey-tts-pockettts-voice-clone]]
+- Parent: [[2026-08-21-clankerjockey-minecraft-cpu-inference-mod]]

@@ -3,20 +3,20 @@ loaderVersion = "[47,)"
 license = "MIT"
 
 [[mods]]
-modId = "mindcraft"
+modId = "clankerjockey"
 version = "${version}"
-displayName = "MindCraft"
+displayName = "Clanker Jockey"
 description = "CPU-only LLM inference (llama.cpp) for NPC dialogue and grammar-constrained tool calls. Runs fully local."
 authors = "Sean"
 
-[[dependencies.mindcraft]]
+[[dependencies.clankerjockey]]
 modId = "forge"
 mandatory = true
 versionRange = "[47,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.mindcraft]]
+[[dependencies.clankerjockey]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[1.20.1,1.21)"

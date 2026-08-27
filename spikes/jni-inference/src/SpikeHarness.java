@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * MindCraft Task 1 feasibility spike harness.
+ * ClankerJockey Task 1 feasibility spike harness.
  *
  * Drives a locally built llama.cpp llama-server binary over its OpenAI-compatible
  * HTTP API from Java (JDK 21, zero external dependencies) and measures:

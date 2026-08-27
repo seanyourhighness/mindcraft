@@ -1,7 +1,7 @@
 # Upstream MindCraft Parity Map
 
 Audit of `mindcraft-bots/mindcraft` (reference) vs. our native mod
-(`seanyourhighness/mindcraft`). Classification:
+(`seanyourhighness/clankerjockey`). Classification:
 
 ```
 COPY CONCEPT        - take the idea, design it fresh for our architecture

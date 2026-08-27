@@ -1,4 +1,4 @@
-# MindCraft - Task 1 Feasibility Spike: JNI-embedded CPU LLM inference
+# ClankerJockey - Task 1 Feasibility Spike: JNI-embedded CPU LLM inference
 
 ## Verdict: **GO** - both acceptance criteria met with wide margins
 

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "mindcraft",
+  "id": "clankerjockey",
   "version": "${version}",
-  "name": "MindCraft",
+  "name": "Clanker Jockey",
   "description": "CPU-only LLM inference (llama.cpp) for NPC dialogue and grammar-constrained tool calls.",
   "authors": [
     "Sean"
@@ -11,10 +11,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.mindcraft.mod.MindCraftMod"
+      "net.clankerjockey.mod.ClankerJockeyMod"
     ],
     "client": [
-      "net.mindcraft.mod.MindCraftClient"
+      "net.clankerjockey.mod.ClankerJockeyClient"
     ]
   },
   "depends": {

@@ -1,4 +1,4 @@
-# MindCraft tool-call JSON grammar (llama.cpp GBNF), per-tool constrained.
+# ClankerJockey tool-call JSON grammar (llama.cpp GBNF), per-tool constrained.
 #
 # Forces exactly {"tool": "<one of the 7 valid tools>", "args": {<that tool's
 # keys>}}. Key names and order are fixed per tool; string values are quoted,

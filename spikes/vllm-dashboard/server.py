@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Minimal live dashboard for the MindCraft vLLM server.
+"""Minimal live dashboard for the ClankerJockey vLLM server.
 
 Serves a single-page dashboard at http://localhost:8765 and proxies the
 vLLM Prometheus /metrics endpoint as JSON so the page can render current

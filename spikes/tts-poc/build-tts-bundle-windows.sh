@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Build the MindCraft TTS Windows bundle: pocket-tts.exe (cross-compiled via
+# Build the ClankerJockey TTS Windows bundle: pocket-tts.exe (cross-compiled via
 # mingw-w64) + onnxruntime.dll + ONNX models + voices.
 #
 # Reuses the ONNX models already exported by build-tts-bundle.sh (platform-
 # independent files) at /tmp/pocketcpp/models. If absent, re-exports them
 # (requires the python venv + torch from the Linux build).
 #
-# Output layout (unpack into <gamedir>/mindcraft/tts/):
+# Output layout (unpack into <gamedir>/clankerjockey/tts/):
 #   bin/pocket-tts.exe + onnxruntime.dll + mingw runtime DLLs
 #   models/*  voices/*
 #
@@ -16,7 +16,7 @@
 #   ./build-tts-bundle-windows.sh [win_out_dir]
 set -euo pipefail
 
-OUT="${1:-/tmp/mindcraft-tts-bundle-win}"
+OUT="${1:-/tmp/clankerjockey-tts-bundle-win}"
 SRC=/tmp/pocketcpp
 MODELS="$SRC/models"
 JO_WAV="${JO_WAV:-/home/sean/.hermes/hermes-agent/tools/neutts_samples/jo.wav}"
@@ -69,4 +69,4 @@ echo "==> [4/4] Verify"
 file "$OUT/bin/pocket-tts.exe" | grep -q "PE32+" || { echo "SMOKE FAIL: not a PE32+ exe"; exit 1; }
 echo "    (run on a Windows host: pocket-tts.exe --server --port 8199 --models-dir models --voices-dir voices --tokenizer models/tokenizer.model --precision int8 --threads 8)"
 du -sh "$OUT"
-echo "Bundle ready at $OUT — unpack into <gamedir>/mindcraft/tts/ and smoke-test on Windows."
+echo "Bundle ready at $OUT — unpack into <gamedir>/clankerjockey/tts/ and smoke-test on Windows."

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Build the MindCraft STT bundle: whisper-server (Linux x86_64) + ggml-small.en.bin
+# Build the ClankerJockey STT bundle: whisper-server (Linux x86_64) + ggml-small.en.bin
 #
-# Output layout (unpack into <gamedir>/mindcraft/stt/):
+# Output layout (unpack into <gamedir>/clankerjockey/stt/):
 #   bin/whisper-server + libwhisper.so.1 + libggml*.so.0
 #   models/ggml-small.en.bin
 #
@@ -11,7 +11,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SRC="$ROOT/.deps/whisper.cpp"
-OUT="${1:-/tmp/mindcraft-stt-bundle}"
+OUT="${1:-/tmp/clankerjockey-stt-bundle}"
 MODEL_URL="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en.bin"
 MODEL_NAME="ggml-small.en.bin"
 
@@ -51,11 +51,11 @@ cp "models/$MODEL_NAME" "$OUT/models/"
 
 echo "==> done"
 du -sh "$OUT"
-echo "Unpack into <gamedir>/mindcraft/stt/ (bin/ + models/)."
+echo "Unpack into <gamedir>/clankerjockey/stt/ (bin/ + models/)."
 
 # ---------------------------------------------------------------------------
 # Windows bundle (optional, cross-compiled from Linux/WSL via mingw-w64)
-#   ./build-stt-bundle.sh /tmp/mindcraft-stt-bundle /tmp/mindcraft-stt-bundle-win
+#   ./build-stt-bundle.sh /tmp/clankerjockey-stt-bundle /tmp/clankerjockey-stt-bundle-win
 # ---------------------------------------------------------------------------
 if [ -n "${2:-}" ] && command -v x86_64-w64-mingw32-g++ >/dev/null 2>&1; then
   WIN_OUT="$2"
@@ -85,5 +85,5 @@ if [ -n "${2:-}" ] && command -v x86_64-w64-mingw32-g++ >/dev/null 2>&1; then
   done
   cp "models/$MODEL_NAME" "$WIN_OUT/models/"
   du -sh "$WIN_OUT"
-  echo "Unpack into <gamedir>/mindcraft/stt/ (bin/ + models/). Verify once on a Windows box."
+  echo "Unpack into <gamedir>/clankerjockey/stt/ (bin/ + models/). Verify once on a Windows box."
 fi

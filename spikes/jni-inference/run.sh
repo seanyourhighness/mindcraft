@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# MindCraft Task 1 spike repro: build llama-server (if missing), download model (if missing), run Java harness.
+# ClankerJockey Task 1 spike repro: build llama-server (if missing), download model (if missing), run Java harness.
 set -euo pipefail
 cd "$(dirname "$0")"
 

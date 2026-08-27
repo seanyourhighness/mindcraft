@@ -1,5 +1,5 @@
 # smollm2-360m - eval transcript
-model: /home/sean/mindcraft/spikes/jni-inference/models/smollm2-360m-instruct-q4_k_m.gguf
+model: /home/sean/clankerjockey/spikes/jni-inference/models/smollm2-360m-instruct-q4_k_m.gguf
 load_time_s: 0.318
 speed_tok_per_s: 110.81
 peak_rss_kb: 497028

@@ -22,7 +22,7 @@ dependencies {
     // Fabric API
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // MindCraft core library (plain Java, no Minecraft deps)
+    // ClankerJockey core library (plain Java, no Minecraft deps)
     implementation project(":core")
 }
 

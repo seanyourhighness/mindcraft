@@ -36,8 +36,8 @@ core/
   engine/   ToolGrammar (GBNF generation), GenOptions.withGrammar
   memory/   MemoryLedger, PromptAssembler, ChatSession (loader-neutral)
 
-mod-forge/  companion entity + goals, ForgeWorldAdapter, ServerGate, MindCraftAgent
-mod-fabric/ companion entity + goals, FabricWorldAdapter, ServerGate, MindCraftAgent
+mod-forge/  companion entity + goals, ForgeWorldAdapter, ServerGate, ClankerJockeyAgent
+mod-fabric/ companion entity + goals, FabricWorldAdapter, ServerGate, ClankerJockeyAgent
 ```
 
 ## Structured output
@@ -182,7 +182,7 @@ companion can eventually answer "go back home" without coordinates.
 
 ## Companion body
 
-Both loaders register a `mindcraft:companion` entity (villager-shaped) with
+Both loaders register a `clankerjockey:companion` entity (villager-shaped) with
 the vanilla goals removed. The agent drives it through custom goals:
 
 - follow a named player at a distance until told to stop
@@ -224,8 +224,8 @@ Turn complete in 2 iteration(s); response: Right behind you!
 This exercises the complete milestone-1 path: chat trigger → grammar-
 constrained LLM call → parse → validate → execute against the world adapter →
 tool result fed back → second LLM call → in-character final response. The
-integration tests are env-gated (`MINDCRAFT_LLAMA_SERVER` /
-`MINDCRAFT_TEST_MODEL`) and run inside the WSL environment where the runtime
+integration tests are env-gated (`CLANKERJOCKEY_LLAMA_SERVER` /
+`CLANKERJOCKEY_TEST_MODEL`) and run inside the WSL environment where the runtime
 bundle lives.
 
 The loop also recovers from repetition: when the model emits the same

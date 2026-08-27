@@ -1,5 +1,5 @@
 # qwen2.5-0.5b - eval transcript
-model: /home/sean/mindcraft/spikes/jni-inference/models/qwen2.5-0.5b-instruct-q4_k_m.gguf
+model: /home/sean/clankerjockey/spikes/jni-inference/models/qwen2.5-0.5b-instruct-q4_k_m.gguf
 load_time_s: 1.023
 speed_tok_per_s: 83.4
 peak_rss_kb: 706804

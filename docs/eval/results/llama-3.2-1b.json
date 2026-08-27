@@ -1,6 +1,6 @@
 {
   "name": "llama-3.2-1b",
-  "model": "/home/sean/mindcraft/spikes/jni-inference/models/llama-3.2-1b-instruct-q4_k_m.gguf",
+  "model": "/home/sean/clankerjockey/spikes/jni-inference/models/llama-3.2-1b-instruct-q4_k_m.gguf",
   "load_time_s": 1.329,
   "tok_per_s_dialogue": [
     50.43,

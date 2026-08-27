@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MindCraft Task 2 model bake-off runner.
+"""ClankerJockey Task 2 model bake-off runner.
 
 Drives a llama.cpp llama-server binary over its OpenAI-compatible HTTP API,
 per candidate model, over the 30-prompt eval set in prompts.txt. Measures:

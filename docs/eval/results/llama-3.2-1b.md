@@ -1,5 +1,5 @@
 # llama-3.2-1b - eval transcript
-model: /home/sean/mindcraft/spikes/jni-inference/models/llama-3.2-1b-instruct-q4_k_m.gguf
+model: /home/sean/clankerjockey/spikes/jni-inference/models/llama-3.2-1b-instruct-q4_k_m.gguf
 load_time_s: 1.329
 speed_tok_per_s: 48.55
 peak_rss_kb: 1457280

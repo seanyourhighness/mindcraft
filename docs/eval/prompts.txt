@@ -1,4 +1,4 @@
-# MindCraft Task 2 eval set: 30 in-game player prompts
+# ClankerJockey Task 2 eval set: 30 in-game player prompts
 #
 # Format: CATEGORY|prompt text
 #   DIALOGUE - plain chat, free-form generation only

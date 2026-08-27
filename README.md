@@ -1,4 +1,4 @@
-# MindCraft
+# Clanker Jockey
 
 In-game Minecraft AI assistant powered by **local llama.cpp inference** — no cloud, no API keys. The mod spawns a llama.cpp server as a child process of the game JVM (loopback only, dies with the game). Ships for **Fabric 1.21.1** and **Forge 1.20.1**.
 
@@ -26,7 +26,7 @@ Requirements: **JDK 21** (Gradle/Loom) **and JDK 17** (Forge toolchain; apt `ope
 
 ```bash
 ./gradlew :core:test          # core unit tests
-./gradlew :mod-forge:build    # → mod-forge/build/libs/mindcraft-forge-<v>.jar
+./gradlew :mod-forge:build    # → mod-forge/build/libs/clankerjockey-forge-<v>.jar
 ./gradlew :mod-fabric:build   # → mod-fabric/build/libs/*.jar
 ```
 
@@ -37,7 +37,7 @@ Gradle to run on JDK 21. Both coexist: Gradle daemon on 21,
 
 ## Runtime assets (NOT in the repo)
 
-The mod expects at `<gamedir>/mindcraft/`:
+The mod expects at `<gamedir>/clankerjockey/`:
 
 - `llama-server` — llama.cpp built CPU-only (`cmake -B build -DGGML_CUDA=OFF && cmake --build build`), commit `d775b896` known-good.
 - `model.gguf` — default model **LittleLamb 0.3B Tool-Calling Q8_0** (303 MB):
@@ -69,7 +69,7 @@ invalid unquoted JSON.
 
 ```bash
 # terminal 1
-/home/sean/mindcraft/.deps/llama.cpp/build/bin/llama-server -m <model.gguf> -c 2048 -t 4 -np 1 --port 18083 --no-webui --jinja
+/home/sean/clankerjockey/.deps/llama.cpp/build/bin/llama-server -m <model.gguf> -c 2048 -t 4 -np 1 --port 18083 --no-webui --jinja
 # terminal 2
 cd docs/eval && python3 run_eval.py --model <model.gguf> --name <run-name> --port 18083 --no-think
 ```

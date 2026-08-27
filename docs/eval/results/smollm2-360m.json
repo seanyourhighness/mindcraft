@@ -1,6 +1,6 @@
 {
   "name": "smollm2-360m",
-  "model": "/home/sean/mindcraft/spikes/jni-inference/models/smollm2-360m-instruct-q4_k_m.gguf",
+  "model": "/home/sean/clankerjockey/spikes/jni-inference/models/smollm2-360m-instruct-q4_k_m.gguf",
   "load_time_s": 0.318,
   "tok_per_s_dialogue": [
     117.74,

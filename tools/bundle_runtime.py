@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Assemble the MindCraft runtime bundle into a game directory.
+"""Assemble the ClankerJockey runtime bundle into a game directory.
 
-The mod expects, at <game dir>/mindcraft/:
+The mod expects, at <game dir>/clankerjockey/:
 
     bin/llama-server[.exe]                       llama.cpp server binary
     models/littlelamb-0.3b-toolcalling-q8_0.gguf  default model
@@ -49,7 +49,7 @@ def find_server(explicit):
         return pathlib.Path(explicit)
     repo = pathlib.Path(__file__).resolve().parent.parent
     candidates = [
-        pathlib.Path.home() / "mindcraft/.deps/llama.cpp/build/bin/llama-server",
+        pathlib.Path.home() / "clankerjockey/.deps/llama.cpp/build/bin/llama-server",
         repo / ".deps/llama.cpp/build/bin/llama-server",
         pathlib.Path("D:/llama-cpp/llama-server.exe"),
     ]
@@ -66,10 +66,10 @@ def find_model(explicit):
         return pathlib.Path(explicit)
     repo = pathlib.Path(__file__).resolve().parent.parent
     candidates = [
-        pathlib.Path.home() / "mindcraft/spikes/jni-inference/models" / MODEL_NAME,
+        pathlib.Path.home() / "clankerjockey/spikes/jni-inference/models" / MODEL_NAME,
         repo / "spikes/jni-inference/models" / MODEL_NAME,
     ]
-    env = os.environ.get("MINDCRAFT_TEST_MODEL")
+    env = os.environ.get("CLANKERJOCKEY_TEST_MODEL")
     if env:
         candidates.insert(0, pathlib.Path(env))
     for c in candidates:
@@ -129,7 +129,7 @@ def verify(bundle_dir):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Assemble the MindCraft runtime bundle.")
+    ap = argparse.ArgumentParser(description="Assemble the ClankerJockey runtime bundle.")
     ap.add_argument("--target", required=True, help="game directory (where the mod runs)")
     ap.add_argument("--server", help="path to llama-server binary (auto-detected otherwise)")
     ap.add_argument("--model", help="path to the LittleLamb GGUF (auto-detected otherwise)")
@@ -139,7 +139,7 @@ def main():
     args = ap.parse_args()
 
     target = pathlib.Path(args.target)
-    bundle = target / "mindcraft"
+    bundle = target / "clankerjockey"
     bin_dir = bundle / "bin"
     models_dir = bundle / "models"
 

@@ -1,0 +1,12 @@
+package net.clankerjockey.core.agent;
+
+import net.clankerjockey.core.tools.ToolCall;
+import net.clankerjockey.core.tools.ToolResult;
+
+/** One executed tool call within a turn, for observability and tests. */
+public record ToolTrace(ToolCall call, ToolResult result) {
+
+    public String signature() {
+        return call.signature();
+    }
+}

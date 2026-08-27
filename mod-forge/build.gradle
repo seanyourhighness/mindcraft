@@ -33,7 +33,7 @@ minecraft {
 dependencies {
     minecraft "net.minecraftforge:forge:${project.forge_minecraft_version}-${project.forge_version}"
 
-    // MindCraft core library (plain Java, no Minecraft deps), bundled into the jar.
+    // ClankerJockey core library (plain Java, no Minecraft deps), bundled into the jar.
     // Plain `implementation`: the core jar is embedded manually in the `jar`
     // task below (JarJar's strict-version handling rejects project deps here).
     implementation project(":core")
@@ -44,7 +44,7 @@ jar {
     from(project(":core").sourceSets.main.output)
     manifest {
         attributes([
-            "Specification-Title": "mindcraft",
+            "Specification-Title": "clankerjockey",
             "Specification-Version": "1",
             "Implementation-Title": project.name,
             "Implementation-Version": project.jar.archiveVersion.map { it.toString() }.getOrElse(""),

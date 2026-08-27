@@ -1,4 +1,4 @@
-# MindCraft - Task 2: Model selection bake-off
+# Clanker Jockey - Task 2: Model selection bake-off
 
 Three small instruct GGUF models evaluated on the 30-prompt in-game eval set
 (`docs/eval/prompts.txt`): 15 dialogue, 10 clear tool calls, 5 ambiguous /

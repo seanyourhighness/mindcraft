@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the MindCraft TTS runtime bundle (PocketTTS.cpp + ONNX models + voices).
+# Build the ClankerJockey TTS runtime bundle (PocketTTS.cpp + ONNX models + voices).
 #
 # Output: <out>/bin/{pocket-tts,libonnxruntime.so*}, <out>/models/*, <out>/voices/*
 #
@@ -11,7 +11,7 @@
 #   OUT=/some/dir ./build-tts-bundle.sh
 set -euo pipefail
 
-OUT="${1:-${OUT:-/tmp/mindcraft-tts-bundle}}"
+OUT="${1:-${OUT:-/tmp/clankerjockey-tts-bundle}}"
 SRC=/tmp/pocketcpp
 WORK=/tmp/pocketcpp-work
 VENV="$SRC/.venv"

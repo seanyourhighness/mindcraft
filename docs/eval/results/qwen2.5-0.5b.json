@@ -1,6 +1,6 @@
 {
   "name": "qwen2.5-0.5b",
-  "model": "/home/sean/mindcraft/spikes/jni-inference/models/qwen2.5-0.5b-instruct-q4_k_m.gguf",
+  "model": "/home/sean/clankerjockey/spikes/jni-inference/models/qwen2.5-0.5b-instruct-q4_k_m.gguf",
   "load_time_s": 1.023,
   "tok_per_s_dialogue": [
     83.53,

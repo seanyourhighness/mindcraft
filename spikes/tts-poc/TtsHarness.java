@@ -1,13 +1,13 @@
-import net.mindcraft.core.engine.EngineException;
-import net.mindcraft.core.engine.TtsConfig;
-import net.mindcraft.core.engine.TtsEngine;
+import net.clankerjockey.core.engine.EngineException;
+import net.clankerjockey.core.engine.TtsConfig;
+import net.clankerjockey.core.engine.TtsEngine;
 
 import java.nio.file.Path;
 import java.util.Arrays;
 
 /**
  * Standalone harness: drives the real PocketTTS.cpp sidecar through the
- * production {@link TtsEngine} (Java 17, JDK-only) to prove the MindCraft
+ * production {@link TtsEngine} (Java 17, JDK-only) to prove the ClankerJockey
  * integration path end-to-end.
  */
 public final class TtsHarness {

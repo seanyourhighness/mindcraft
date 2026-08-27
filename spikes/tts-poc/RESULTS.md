@@ -1,9 +1,9 @@
-# MindCraft TTS POC — PocketTTS.cpp sidecar
+# ClankerJockey TTS POC — PocketTTS.cpp sidecar
 
 ## Verdict: **GO** — verified end-to-end on this machine
 
 PocketTTS.cpp (single-file C++ ONNX runtime for Kyutai's Pocket TTS) is the
-supertonic replacement. It is strictly better for MindCraft's requirements:
+supertonic replacement. It is strictly better for ClankerJockey's requirements:
 zero-shot voice cloning built in, CPU-only, and it drops into the exact
 locked design the llama-server spike settled on (HTTP-to-server, no JNI).
 
@@ -69,10 +69,10 @@ voices/<name>.wav         reference samples for cloning
   `mod-forge` wiring done; sidecar build + mic capture still to do. See
   `spikes/stt-poc/RESULTS.md`.
 - **Audio playback**: `TtsAudioPlayer` (mod-forge) plays the WAV via a custom
-  in-memory `SoundInstance` (no resource registration). `MindCraftMod.speakAndPlay(text)`
+  in-memory `SoundInstance` (no resource registration). `ClankerJockeyMod.speakAndPlay(text)`
   is the full TTS loop. Mic capture (the STT input) is the remaining gap.
 - Windows: build `pocket-tts.exe` + `onnxruntime.dll` (CMake already handles
   win-x64); the `LD_LIBRARY_PATH` line is a no-op there (DLLs load from the
   binary dir).
-- Wire `TtsEngine`/`SttEngine` into `MindCraftClient` (Fabric) alongside the
+- Wire `TtsEngine`/`SttEngine` into `ClankerJockeyClient` (Fabric) alongside the
   Forge entrypoint once the Fabric chat path exists.
