@@ -2,12 +2,14 @@ package net.mindcraft.mod.agent;
 
 import net.mindcraft.core.agent.AgentLoop;
 import net.mindcraft.core.agent.AgentLoopConfig;
+import net.mindcraft.core.agent.Signal;
 import net.mindcraft.core.engine.InferenceEngine;
 import net.mindcraft.core.events.EventPriority;
 import net.mindcraft.core.events.ProactivePolicy;
 import net.mindcraft.core.events.ReflexLayer;
 import net.mindcraft.core.events.SalienceGate;
 import net.mindcraft.core.events.SemanticEvent;
+import net.mindcraft.core.events.SignalBridge;
 import net.mindcraft.core.events.WorldAwareness;
 import net.mindcraft.core.memory.ChatSession;
 import net.mindcraft.core.tasks.AgentTask;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,6 +63,7 @@ public final class MindCraftAgent {
     private final SalienceGate salience = new SalienceGate();
     private final Map<String, ProactivePolicy> proactivePolicies = new ConcurrentHashMap<>();
     private final WorldAwareness worldAwareness = new WorldAwareness();
+    private final SignalBridge signalBridge = new SignalBridge(SignalBridge.defaultWatches());
     private final ExecutorService worker = Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "mindcraft-agent");
         t.setDaemon(true);
@@ -225,6 +229,58 @@ public final class MindCraftAgent {
 
     public static MindCraftAgent instance() {
         return instance;
+    }
+
+    /**
+     * Sensor feed (WorldSensors): a curated world signal becomes a gated
+     * semantic event, then the proactive path decides whether the companion
+     * reacts in character.
+     */
+    public void onSignal(Signal signal) {
+        try {
+            Optional<SemanticEvent> event = signalBridge.assess(signal);
+            if (event.isEmpty()) return;
+            ChatSession session = sessions.get(localName());
+            if (session != null) {
+                maybeProactive(session, event.get());
+            }
+        } catch (Exception e) {
+            LOGGER.debug("[mindcraft] sensor signal failed", e);
+        }
+    }
+
+    /**
+     * Run a full agent turn for a voice transcript (STT input) and return the
+     * reply so the caller can speak it (TTS). Same memory, tools and loop as
+     * typed chat — one seamless agent.
+     */
+    public static String handleVoice(String transcript) {
+        MindCraftAgent a = instance;
+        if (a == null || transcript == null || transcript.isBlank()) {
+            return null;
+        }
+        return a.voiceReply(transcript);
+    }
+
+    private String voiceReply(String text) {
+        String name = localName();
+        ChatSession session = sessions.computeIfAbsent(name, p -> {
+            try {
+                return new ChatSession(engine, memoryDir, world.worldId(), p);
+            } catch (IOException e) {
+                LOGGER.warn("[mindcraft] could not open memory for {}", p, e);
+                return null;
+            }
+        });
+        if (session == null) return null;
+        try {
+            synchronized (session) {
+                return session.replyWithAgent(text, loop, world);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("[mindcraft] voice turn failed", e);
+            return null;
+        }
     }
 
     @SubscribeEvent

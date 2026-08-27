@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
  * (and its subject matches), observe it".
  *
  * <p>The watch itself does nothing — matching a watch makes the
- * {@link AgentRuntime} send the observation to the LLM, which decides the
- * reaction (a spoken line or a tool call). The watch only shapes the prompt
- * via its {@code note}.
+ * {@link net.mindcraft.core.events.SignalBridge} convert the observation into
+ * a semantic event. The watch only filters signals and shapes the event via
+ * its {@code note}.
  *
  * <p>Matching rules:
  * <ul>

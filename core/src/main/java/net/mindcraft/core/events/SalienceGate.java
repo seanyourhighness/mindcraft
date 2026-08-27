@@ -32,6 +32,16 @@ public final class SalienceGate {
 
     /** Assess an event and update suppression state if it should notify. */
     public synchronized SalienceDecision assess(SemanticEvent e) {
+        return assess(e, false);
+    }
+
+    /**
+     * Assess an event; {@code curated} signals (already filtered by a watch
+     * set) bypass the salience threshold but still respect cooldown and
+     * repetition suppression, so a watched diamond find is noticed without
+     * spamming.
+     */
+    public synchronized SalienceDecision assess(SemanticEvent e, boolean curated) {
         String type = e.type();
         int repeats = recentCounts.getOrDefault(type, 0);
         double score = score(e, repeats);
@@ -40,7 +50,7 @@ public final class SalienceGate {
         Long last = lastNotifiedAt.get(type);
         boolean inCooldown = last != null && now - last < cooldownMs;
         boolean suppressedByCooldown = inCooldown && !e.priority().alwaysNotify();
-        boolean belowThreshold = score < NOTIFY_THRESHOLD && !e.priority().alwaysNotify();
+        boolean belowThreshold = score < NOTIFY_THRESHOLD && !e.priority().alwaysNotify() && !curated;
 
         recentCounts.merge(type, 1, Integer::sum);
         if (!suppressedByCooldown && !belowThreshold) {

@@ -28,6 +28,11 @@ public record SemanticEvent(
         return new SemanticEvent(priority, type, description, null, System.currentTimeMillis(), Map.of());
     }
 
+    public static SemanticEvent of(EventPriority priority, String type, String description,
+                                   Map<String, Object> data) {
+        return new SemanticEvent(priority, type, description, null, System.currentTimeMillis(), data);
+    }
+
     /** Render as one prompt line, e.g. {@code [P0] HOSTILE_APPROACHING: creeper at 3.2m}. */
     public String renderLine() {
         StringBuilder sb = new StringBuilder();

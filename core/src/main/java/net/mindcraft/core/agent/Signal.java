@@ -3,7 +3,8 @@ package net.mindcraft.core.agent;
 /**
  * A game observation the agent can react to. Signals are how the world
  * reaches the agent: sensors (event handlers, tick polls) mint them and the
- * {@link AgentRuntime} matches them against {@link Watch watches}.
+ * {@link net.mindcraft.core.events.SignalBridge} matches them against
+ * {@link Watch watches} before they become semantic events.
  *
  * <p>Subjects are registry IDs (e.g. {@code minecraft:creeper},
  * {@code minecraft:crimson_forest}, {@code minecraft:diamond_pickaxe}) or
