@@ -22,12 +22,12 @@ class ConfigTest {
     @Test
     void defaultsAreSane() {
         EngineConfig c = minimalConfig();
-        assertEquals("/tmp/model.gguf", c.modelPath().toString());
+        assertEquals(Path.of("/tmp/model.gguf"), c.modelPath());
         assertEquals("127.0.0.1", c.host());
         assertEquals(0, c.port(), "port 0 = auto-pick a free port");
         assertEquals(4, c.threads());
         assertEquals(8192, c.contextSize());
-        assertEquals("/tmp/llama-server", c.serverBinary().toString());
+        assertEquals(Path.of("/tmp/llama-server"), c.serverBinary());
         assertTrue(c.extraArgs().isEmpty(), "no extra args by default");
     }
 
@@ -42,12 +42,12 @@ class ConfigTest {
                 .serverBinary(Path.of("/s"))
                 .extraArgs(List.of("--no-mmap", "--parallel", "1"))
                 .build();
-        assertEquals("/m", c.modelPath().toString());
+        assertEquals(Path.of("/m"), c.modelPath());
         assertEquals("0.0.0.0", c.host());
         assertEquals(12345, c.port());
         assertEquals(8, c.threads());
         assertEquals(4096, c.contextSize());
-        assertEquals("/s", c.serverBinary().toString());
+        assertEquals(Path.of("/s"), c.serverBinary());
         assertEquals(List.of("--no-mmap", "--parallel", "1"), c.extraArgs());
     }
 

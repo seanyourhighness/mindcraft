@@ -10,6 +10,11 @@ import net.mindcraft.core.engine.SttEngine;
 import net.mindcraft.core.engine.TtsConfig;
 import net.mindcraft.core.engine.TtsEngine;
 import net.minecraft.client.Minecraft;
+import net.mindcraft.mod.agent.MindCraftAgent;
+import net.mindcraft.mod.companion.MindCraftModCompanion;
+import net.minecraft.client.renderer.entity.VillagerRenderer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -45,7 +50,9 @@ public class MindCraftMod {
     private static ExecutorService agentExecutor;
 
     public MindCraftMod() {
-        FMLJavaModLoadingContext.get().getModEventBus().register(this);
+        var modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modBus.register(this);
+        MindCraftModCompanion.ENTITY_TYPES.register(modBus);
     }
 
     @SubscribeEvent
@@ -55,6 +62,8 @@ public class MindCraftMod {
                 engine = createEngine();
                 engine.start();
                 LOGGER.info("[{}] inference engine healthy on port {}", MOD_ID, engine.port());
+                MindCraftAgent.start(engine);
+                LOGGER.info("[{}] companion agent online", MOD_ID);
             } catch (EngineException e) {
                 // Never crash the game over the assistant: log loudly and run degraded.
                 LOGGER.error("[{}] failed to start inference engine; mod runs degraded", MOD_ID, e);
@@ -199,6 +208,21 @@ public class MindCraftMod {
                 .threads(Runtime.getRuntime().availableProcessors() >= 8 ? 4 : 2)
                 .language("en")
                 .build());
+    }
+
+    /** Companion body attributes (mod bus, both sides). */
+    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class CommonModEvents {
+    }
+
+    /** Client-only registration (companion renderer). */
+    @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class ClientModEvents {
+        @SubscribeEvent
+        public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(MindCraftModCompanion.COMPANION_TYPE.get(),
+                    VillagerRenderer::new);
+        }
     }
 
     private static InferenceEngine createEngine() throws EngineException {

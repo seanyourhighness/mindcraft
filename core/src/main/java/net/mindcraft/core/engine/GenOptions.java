@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Sampling options for a single generation call. Defaults: maxTokens 120,
  * temperature 0.7, no seed (llama-server picks one randomly), thinking
- * enabled (no chat_template_kwargs sent).
+ * enabled (no chat_template_kwargs sent), no grammar.
  *
  * @param maxTokens maximum number of tokens to generate
  * @param temperature sampling temperature (0 = greedy)
@@ -14,9 +14,11 @@ import java.util.Map;
  * @param extraBody  optional top-level JSON body fields merged into the
  *                   request (e.g. {@code chat_template_kwargs}); values are
  *                   emitted via {@link MiniJson#stringify(Object)}
+ * @param grammar    optional llama.cpp GBNF grammar constraining the output
+ *                   (e.g. a tool-call JSON grammar); null = unconstrained
  */
 public record GenOptions(int maxTokens, double temperature, Long seed,
-                         Map<String, Object> extraBody) {
+                         Map<String, Object> extraBody, String grammar) {
 
     public GenOptions {
         if (maxTokens < 1) {
@@ -30,12 +32,17 @@ public record GenOptions(int maxTokens, double temperature, Long seed,
 
     /** Defaults: 120 max tokens, temperature 0.7, no seed, no extras. */
     public GenOptions() {
-        this(120, 0.7, null, null);
+        this(120, 0.7, null, null, null);
     }
 
     /** 120 max tokens, given temperature, no seed, no extras. */
     public GenOptions(int maxTokens, double temperature) {
-        this(maxTokens, temperature, null, null);
+        this(maxTokens, temperature, null, null, null);
+    }
+
+    /** Full options with a seed and extra body fields but no grammar. */
+    public GenOptions(int maxTokens, double temperature, Long seed, Map<String, Object> extraBody) {
+        this(maxTokens, temperature, seed, extraBody, null);
     }
 
     /**
@@ -49,10 +56,25 @@ public record GenOptions(int maxTokens, double temperature, Long seed,
 
     /** noThink with explicit sampling parameters. */
     public static GenOptions noThink(int maxTokens, double temperature) {
+        return noThink(maxTokens, temperature, null);
+    }
+
+    /** noThink with an explicit seed (reproducible integration tests). */
+    public static GenOptions noThink(int maxTokens, double temperature, Long seed) {
         Map<String, Object> inner = new LinkedHashMap<>();
         inner.put("enable_thinking", false);
         Map<String, Object> outer = new LinkedHashMap<>();
         outer.put("chat_template_kwargs", inner);
-        return new GenOptions(maxTokens, temperature, null, outer);
+        return new GenOptions(maxTokens, temperature, seed, outer, null);
+    }
+
+    /** Copy with a GBNF grammar constraint attached. */
+    public GenOptions withGrammar(String gbnf) {
+        return new GenOptions(maxTokens, temperature, seed, extraBody, gbnf);
+    }
+
+    /** Copy with a different token budget. */
+    public GenOptions withMaxTokens(int maxTokens) {
+        return new GenOptions(maxTokens, temperature, seed, extraBody, grammar);
     }
 }

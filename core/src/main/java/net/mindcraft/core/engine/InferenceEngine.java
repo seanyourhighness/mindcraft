@@ -195,6 +195,9 @@ public final class InferenceEngine implements InferenceBackend {
         if (opts.seed() != null) {
             body.put("seed", opts.seed());
         }
+        if (opts.grammar() != null && !opts.grammar().isBlank()) {
+            body.put("grammar", opts.grammar());
+        }
         body.putAll(opts.extraBody());
         body.put("stream", false);
         return MiniJson.stringify(body);
