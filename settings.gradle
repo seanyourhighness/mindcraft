@@ -13,6 +13,11 @@ pluginManagement {
     }
 }
 
+plugins {
+    // Auto-provisions JDK toolchains (Forge's HackyJavaCompile forces 17).
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}
+
 rootProject.name = "mindcraft"
 
 include("core", "mod-fabric", "mod-forge")
